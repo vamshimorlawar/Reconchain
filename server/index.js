@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     user: "localhost",
     host: "localhost",
     password: "",
-    database: ""
+    database: "reconchain"
 });
 
 app.listen(3001, ()=>{
