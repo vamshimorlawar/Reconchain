@@ -6,6 +6,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+// res.header( "Access-Control-Allow-Origin" );
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -15,11 +16,14 @@ const db = mysql.createConnection({
 });
 
 app.get('/', (req, res) => {
-    const sqlInsert = "INSERT INTO user_account (name, email, password, confirmPassword) VALUES ('Deepak', 'deepak09@gmail.com', '12345678', '12345678')";
-    db.query(sqlInsert, (err, result) => {
-        res.send("Sql insert query fired")
-    })
+    console.log("Basic Api");
 });
+
+app.post('/signup', (req, res) => {
+    const username = req.body.username;
+    console.log("signup api hit", username);
+    res.send({msg: "Success"});
+})
 
 
 
