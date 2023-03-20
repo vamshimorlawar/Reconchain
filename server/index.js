@@ -21,8 +21,17 @@ app.get('/', (req, res) => {
 
 app.post('/signup', (req, res) => {
     const username = req.body.username;
-    console.log("signup api hit", username);
-    res.send({msg: "Success"});
+    const email = req.body.email;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+
+    if(password == confirmPassword)
+    {
+        res.send({status: "Success"})
+    }
+    else{
+        res.send({status: "Failure"})
+    }
 })
 
 

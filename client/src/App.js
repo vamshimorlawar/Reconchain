@@ -7,7 +7,7 @@ function App() {
     <div>
       <div>Home</div>
       <Link to="/signup">Sign Up</Link>
-      <button>Sign Up</button>
+      <Link to="/login">Login</Link>
     </div>
     
   );
