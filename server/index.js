@@ -41,6 +41,32 @@ app.post("/signup", (req, res) => {
   }
 });
 
+app.post("/login", (req,res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  const query = "SELECT * FROM user_account WHERE email = ? AND password = ?";
+
+  db.query(
+    query, [email, password],
+    (err,result) => {
+      if(err) {
+        res.send({err:err})
+      }
+      if(result.length > 0){
+        console.log(result);
+        res.send({status: "Success"});
+      }
+      else{
+        console.log("fail");
+        res.send({status:"Failure"});
+      }
+
+    }
+  )
+
+});
+
 app.listen(3001, () => {
   console.log("running express server");
 });
