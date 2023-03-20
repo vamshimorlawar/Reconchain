@@ -93,6 +93,7 @@ contract Reconchain {
         delete candidates[msg.sender];
         
         emit CandidateProfileDeleted(msg.sender);
+        // delete company
     }
     
     // create company
@@ -125,6 +126,7 @@ contract Reconchain {
     // delete company
     function deleteCompanyProfile() public onlyCompany {
         delete companies[msg.sender];
+        delete jobPostings[msg.sender];
         
         emit CompanyProfileDeleted(msg.sender);
     }
@@ -144,4 +146,7 @@ contract Reconchain {
         emit JobPostingCreated(msg.sender, tempIndex);
         companies[msg.sender].totalJobPosting +=1;
     }
+
+
+    // TODO:funciton that will return all the posts by that company given their address
 }
