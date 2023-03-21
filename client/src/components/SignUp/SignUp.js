@@ -19,7 +19,7 @@ function SignUp() {
         confirmPassword: confirmPasswordReg,
       })
       .then((res) => {
-        if (res.data.status == "Success") {
+        if (res.data.status === "Success") {
           console.log("aagya");
           navigate("/");
         } else {

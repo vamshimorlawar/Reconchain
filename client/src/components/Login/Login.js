@@ -15,7 +15,7 @@ function Login() {
         password: passwordReg,
       })
       .then((res) => {
-        if (res.data.status == "Success") {
+        if (res.data.status === "Success") {
           navigate("/home");
         }
       });
