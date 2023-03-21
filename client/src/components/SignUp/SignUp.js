@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import styles from "./SignUp.module.css";
 import axios from "axios";
-import { Navigate, Route, useNavigate} from 'react-router'
-import App from "../../App";
+import { useNavigate } from "react-router";
 
 function SignUp() {
   const [userNameReg, setUserNameReg] = useState("");
@@ -13,23 +11,20 @@ function SignUp() {
   const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
   const signup = () => {
-    
     axios
       .post("http://localhost:3001/signup", {
         username: userNameReg,
         password: passwordReg,
         email: emailReg,
-        confirmPassword: confirmPasswordReg
+        confirmPassword: confirmPasswordReg,
       })
       .then((res) => {
-        if(res.data.status == "Success")
-        {
+        if (res.data.status == "Success") {
           console.log("aagya");
-          navigate("/")          
-        }
-        else{
+          navigate("/");
+        } else {
           console.log("nhi aaya");
-          setFlag(true)
+          setFlag(true);
         }
       });
   };
@@ -63,10 +58,8 @@ function SignUp() {
         onChange={(e) => {
           setConfirmPassword(e.target.value);
         }}
-        
       />
-      {flag==1 && <div >Password Wrong
-      </div>}
+      {flag === 1 && <div>Password Wrong</div>}
 
       <button onClick={signup}>Submit</button>
     </div>
