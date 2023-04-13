@@ -28,15 +28,28 @@ const CandidateProfile = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  const updateProfile = (event) => {
     event.preventDefault();
-    console.log(formData);
+    axios.post("http://localhost:3001/updateCandidateProfile", {
+        email: email,
+        interests: formData.interests,
+        education: formData.education,
+        experience: formData.experience,
+        skills: formData.skills,
+        languages: formData.languages,
+        mobile: formData.mobile
+    }).then((res)=>{
+      if(res.data.status === "success"){
+        console.log("dProfile updated");
+      }else{
+        console.log("Update Failed");
+      }
+    })
   };
-  console.log(formData);
   return (
     <div>
       <CandidateNav></CandidateNav>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={updateProfile}>
         <Form.Group controlId="formUsername">
           <Form.Label>Username</Form.Label>
           <Form.Control

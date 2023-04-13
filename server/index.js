@@ -108,6 +108,28 @@ app.post("/getCandidateProfile",(req,res) => {
       })
     }
   })
+});
+
+app.post("/updateCandidateProfile", (req, res) => {
+  const email = req.body.email;
+  const interests = req.body.interests;
+  const education = req.body.education;
+  const experience = req.body.experience;
+  const skills = req.body.skills;
+  const languages = req.body.languages;
+  const mobile = req.body.mobile;
+  console.log(interests, education, experience, skills, languages, mobile, email);
+  const query = "UPDATE candidate_profile SET interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+
+  db.query(query, [interests, education, experience, skills, languages, mobile, email],
+    (err, result) => {
+      if(err){
+        res.send({ status: "failure" });
+      }else{
+        res.send({ status: "success"} );
+      }
+    }
+    )
 
 })
 
