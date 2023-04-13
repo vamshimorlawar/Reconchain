@@ -223,11 +223,26 @@ app.post("/addJobPost", (req, res) => {
 
 app.post("/getJobPosts", (req, res) => {
   const email = req.body.email;
-
   const query = "SELECT * FROM job_posts WHERE company_email = ?";
 
   db.query(
     query, [email], (err, result) => {
+      if(err){
+        console.log(err);
+        res.send({ status: "failure"});
+      }else{
+        res.send({status: "success", posts: result});
+      }
+    }
+  )
+});
+
+app.get("/getJobPosts", (req, res) => {
+
+  const query = "SELECT * FROM job_posts";
+
+  db.query(
+    query, (err, result) => {
       if(err){
         console.log(err);
         res.send({ status: "failure"});
