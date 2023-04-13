@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Container } from "react-bootstrap";
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 import PropTypes from 'prop-types';
@@ -32,7 +32,8 @@ const Signup = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Container className="d-flex flex-column justify-content-center align-items-center h-100 mt-5">
+      <Form onSubmit={handleSubmit} style={{width: "30%"}}>
       <Form.Group controlId="formUsername">
         <Form.Label>Username</Form.Label>
         <Form.Control
@@ -85,10 +86,12 @@ const Signup = () => {
         </Form.Control>
       </Form.Group>
 
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" className="mt-3">
         Sign Up
       </Button>
     </Form>
+    </Container>
+    
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import styles from './Login.module.css';
 import axios from 'axios';
@@ -33,7 +33,7 @@ const Login = () => {
   }
 
   return (
-    <div>
+    <Container className="d-flex flex-column justify-content-center align-items-center h-100 mt-5">
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
@@ -48,11 +48,11 @@ const Login = () => {
         <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </Form.Group>
 
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" className='mt-3'>
         Submit
       </Button>
     </Form>
-    </div>
+    </Container>
   );
 };
 
