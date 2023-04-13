@@ -82,7 +82,10 @@ function App() {
       <div>App</div>
       <Link to="/signup">Sign Up</Link>
       <Link to="/login">Login</Link>
-      <div className="custom-buttons">
+      
+      
+      <div style={{display: "none"}}>
+        <div className="custom-buttons">
           <button onClick={fetchGreeting} style={{ backgroundColor: "green" }}>
             Fetch Greeting
           </button>
@@ -90,15 +93,16 @@ function App() {
             Set Greeting
           </button>
         </div>
-        {/* INPUT TEXT - String  */}
-        <input
-          onChange={(e) => setMessage(e.target.value)}
-          value={message}
-          placeholder="Set Greeting Message"
-        />
+          {/* INPUT TEXT - String  */}
+          <input
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            placeholder="Set Greeting Message"
+          />
 
-        {/* Current Value stored on Blockchain */}
-        <h2 className="greeting">Greeting: {currentGreeting}</h2>
+          {/* Current Value stored on Blockchain */}
+          <h2 className="greeting">Greeting: {currentGreeting}</h2>
+      </div>
     </div>
   );
 }
