@@ -1,10 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './CompanyHome.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./CompanyHome.module.css";
+import CompanyNav from "../CompanyNav/CompanyNav";
 
 const CompanyHome = () => (
-  <div className={styles.CompanyHome}>
-    CompanyHome Component
+  <div>
+    <CompanyNav></CompanyNav>
   </div>
 );
 

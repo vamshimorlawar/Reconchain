@@ -6,6 +6,7 @@ import Signup from "./components/Signup/Signup";
 import CandidateHome from "./components/CandidateHome/CandidateHome";
 import CandidateProfile from "./components/CandidateProfile/CandidateProfile";
 import CompanyHome from "./components/CompanyHome/CompanyHome";
+import CompanyProfile from "./components/CompanyProfile/CompanyProfile";
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
@@ -30,7 +31,17 @@ root.render(
         }
       />
       <Route path="/candidate-profile" element={<CandidateProfile />} />
-      <Route path="/company-home" element={<CompanyHome />} />
+      <Route
+        path="/company-home"
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CompanyHome />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
+      />
+      <Route path="/company-profile" element={<CompanyProfile />} />
 
       {/* <Route path="*" element={<App />} /> */}
     </Routes>
