@@ -30,7 +30,10 @@ app.post("/signup", (req, res) => {
     const query =
       "INSERT INTO user_account (name, email, password, userType) VALUES (?,?,?,?)";
     const query_2 =
-      "INSERT INTO candidate_profile (username	,email	,rating,	interests	,education	,experience,	skills,	languages,	mobile) VALUES (?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO candidate_profile (username, email, rating,	interests	,education	,experience,	skills,	languages,	mobile) VALUES (?,?,?,?,?,?,?,?,?)";
+
+    const query_3 =
+      "INSERT INTO company_profile (username, email, rating, company_name, location, mobile, website, about, number_job_posts) VALUES (?,?,?,?,?,?,?,?,?)";
     db.query(query, [username, email, password, userType], (err, result) => {
       if (err) {
         res.send({
@@ -40,19 +43,27 @@ app.post("/signup", (req, res) => {
         res.send({ status: "success" });
       }
     });
-    if(userType === "candidate")
-    {
-    db.query(
-      query_2,
-      [username, email, 0, "", "", "", "", "", ""],
-      (err, result) => {
-        if (err) {
-          console.log(err);
+    if (userType === "candidate") {
+      db.query(
+        query_2,
+        [username, email, 0, "", "", "", "", "", ""],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          }
         }
-      }
-    );}
-    else{
-      console.log("query2 failed");
+      );
+    }
+    if (userType === "company") {
+      db.query(
+        query_3,
+        [username, email, 0, "", "", "", "", "", 0],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          }
+        }
+      );
     }
   } else {
     res.send({
@@ -85,15 +96,15 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.post("/getCandidateProfile",(req,res) => {
+app.post("/getCandidateProfile", (req, res) => {
   const email = req.body.email;
   const query = "SELECT * FROM candidate_profile WHERE email = ?";
 
-  db.query(query,[email],(err,result) => {
-    if(err){
-      res.send({status: "failure"})
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      res.send({ status: "failure" });
     }
-    if(result.length > 0){
+    if (result.length > 0) {
       res.send({
         status: "success",
         username: result[0].username,
@@ -104,10 +115,10 @@ app.post("/getCandidateProfile",(req,res) => {
         experience: result[0].experience,
         skills: result[0].skills,
         languages: result[0].languages,
-        mobile: result[0].mobile
-      })
+        mobile: result[0].mobile,
+      });
     }
-  })
+  });
 });
 
 app.post("/updateCandidateProfile", (req, res) => {
@@ -118,19 +129,114 @@ app.post("/updateCandidateProfile", (req, res) => {
   const skills = req.body.skills;
   const languages = req.body.languages;
   const mobile = req.body.mobile;
-  console.log(interests, education, experience, skills, languages, mobile, email);
-  const query = "UPDATE candidate_profile SET interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
 
-  db.query(query, [interests, education, experience, skills, languages, mobile, email],
+  const query =
+    "UPDATE candidate_profile SET interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+
+  db.query(
+    query,
+    [interests, education, experience, skills, languages, mobile, email],
     (err, result) => {
-      if(err){
+      if (err) {
         res.send({ status: "failure" });
-      }else{
-        res.send({ status: "success"} );
+      } else {
+        res.send({ status: "success" });
       }
     }
-    )
+  );
+});
 
+app.post("/getCompanyProfile", (req, res) => {
+  const email = req.body.email;
+  const query = "SELECT * FROM company_profile WHERE email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      res.send({ status: "failure" });
+    }
+    if (result.length > 0) {
+      res.send({
+        status: "success",
+        username: result[0].username,
+        email: result[0].email,
+        rating: result[0].rating,
+        company_name: result[0].company_name,
+        location: result[0].location,
+        mobile: result[0].mobile,
+        website: result[0].website,
+        about: result[0].about,
+        number_job_posts: result[0].number_job_posts,
+      });
+    }
+  });
+});
+
+app.post("/updateCompanyProfile", (req, res) => {
+  const email = req.body.email;
+  const company_name = req.body.company_name;
+  const location = req.body.location;
+  const mobile = req.body.mobile;
+  const website = req.body.website;
+  const about = req.body.about;
+
+  const query =
+    "UPDATE company_profile SET company_name = ?, location = ?, mobile = ?, website = ?, about = ? WHERE email = ?";
+
+  db.query(
+    query,
+    [company_name, location, mobile, website, about, email],
+    (err, result) => {
+      if (err) {
+        res.send({ status: "failure" });
+      } else {
+        res.send({ status: "success" });
+      }
+    }
+  );
+});
+
+app.post("/addJobPost", (req, res) => {
+  const company_email = req.body.company_email;
+  const title = req.body.title;
+  const description = req.body.description;
+  const tag = req.body.tag;
+  const location = req.body.location;
+  const type = req.body.type;
+  const salary = req.body.salary;
+
+  const query =
+    "INSERT INTO job_posts (company_email, title, description, tag, location, type, salary, report) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    query,
+    [company_email, title, description, tag, location, type, salary, 0],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({ status: "failure" });
+      } else {
+        res.send({ status: "success" });
+      }
+    }
+  );
+});
+
+app.post("/getJobPosts", (req, res) => {
+  const email = req.body.email;
+
+  const query = "SELECT * FROM job_posts WHERE company_email = ?";
+
+  db.query(
+    query, [email], (err, result) => {
+      if(err){
+        console.log(err);
+        res.send({ status: "failure"});
+      }else{
+        console.log("All row data", result);
+        res.send({status: "success", posts: result});
+      }
+    }
+  )
 })
 
 app.listen(3001, () => {
