@@ -7,7 +7,6 @@ import axios from "axios";
 
 const CandidateProfile = () => {
   const [formData, setFormData] = useState(null);
-
   const email = sessionStorage.getItem("email");
 
   useEffect(()=>{

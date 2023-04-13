@@ -3,10 +3,12 @@ import { Form, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CompanyJobPost.module.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CompanyJobPost = () => {
   const [formData, setFormData] = useState(null);
   const email = sessionStorage.getItem("email");
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -28,6 +30,7 @@ const CompanyJobPost = () => {
       .then((res) => {
         if (res.data.status === "success") {
           console.log("Job Posted");
+          navigate("/company-home")
         } else {
           console.log("Job Post Failed");
         }
