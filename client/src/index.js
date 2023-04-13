@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
+import CandidateHome from './components/CandidateHome/CandidateHome';
+import CompanyHome from './components/CompanyHome/CompanyHome';
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
@@ -18,6 +20,9 @@ root.render(
      <Route path="/" element={<App/>}/>
      <Route path="/login" element={<Login/>}/>
      <Route path="/signup" element={<Signup/>}/>
+     <Route path="/candidate-home" element={<CandidateHome/>}/>
+     <Route path="/company-home" element={<CompanyHome/>}/>
+
      
      {/* <Route path="*" element={<App />} /> */}
    </Routes>
