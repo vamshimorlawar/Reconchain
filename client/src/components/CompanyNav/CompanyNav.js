@@ -13,7 +13,7 @@ const CompanyNav = () => {
   }
   const email = sessionStorage.getItem("email");
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" sticky="top">
       <Navbar.Brand href="#home">Reconchain_Company</Navbar.Brand>
       <Nav className="ml-auto">
           <Nav.Item>
