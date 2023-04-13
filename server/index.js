@@ -29,15 +29,31 @@ app.post("/signup", (req, res) => {
   if (password == confirmPassword) {
     const query =
       "INSERT INTO user_account (name, email, password, userType) VALUES (?,?,?,?)";
+    const query_2 =
+      "INSERT INTO candidate_profile (username	,email	,rating,	interests	,education	,experience,	skills,	languages,	mobile) VALUES (?,?,?,?,?,?,?,?,?)";
     db.query(query, [username, email, password, userType], (err, result) => {
-      if(err){
+      if (err) {
         res.send({
           status: "failure",
-        });    
-      }else{
+        });
+      } else {
         res.send({ status: "success" });
       }
     });
+    if(userType === "candidate")
+    {
+    db.query(
+      query_2,
+      [username, email, 0, "", "", "", "", "", ""],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    );}
+    else{
+      console.log("query2 failed");
+    }
   } else {
     res.send({
       status: "password didnt match",
@@ -55,19 +71,45 @@ app.post("/login", (req, res) => {
       res.send({ status: "failure" });
     }
     if (result.length > 0) {
-      if(result[0].userType == "candidate"){
-        location = "/candidate-home"
+      if (result[0].userType == "candidate") {
+        location = "/candidate-home";
       }
-      if(result[0].userType == "company"){
-        location = "/company-home"
+      if (result[0].userType == "company") {
+        location = "/company-home";
       }
       console.log(location);
       res.send({ status: "success", location: location });
     } else {
-      res.send({ status: "no data found"});
+      res.send({ status: "no data found" });
     }
   });
 });
+
+app.post("/getCandidateProfile",(req,res) => {
+  const email = req.body.email;
+  const query = "SELECT * FROM candidate_profile WHERE email = ?";
+
+  db.query(query,[email],(err,result) => {
+    if(err){
+      res.send({status: "failure"})
+    }
+    if(result.length > 0){
+      res.send({
+        status: "success",
+        username: result[0].username,
+        email: result[0].email,
+        rating: result[0].rating,
+        interests: result[0].interests,
+        education: result[0].education,
+        experience: result[0].experience,
+        skills: result[0].skills,
+        languages: result[0].languages,
+        mobile: result[0].mobile
+      })
+    }
+  })
+
+})
 
 app.listen(3001, () => {
   console.log("running express server");
