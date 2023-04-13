@@ -35,10 +35,14 @@ const CompanyHome = () => {
     return (
       <div>
         <CompanyNav></CompanyNav>
-        <Link to="/company-job-post">
-          <button className="btn btn-warning mx-3 my-2 ">Add New Job Post</button>
-        </Link>
-        <div>{postItems}</div>
+        <div>
+          <Link to="/company-job-post">
+            <button className="btn btn-warning mx-3 my-2 ">
+              Add New Job Post
+            </button>
+          </Link>
+          <div>{postItems}</div>
+        </div>
       </div>
     );
   } else {
