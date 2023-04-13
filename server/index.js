@@ -237,7 +237,7 @@ app.post("/getJobPosts", (req, res) => {
       }
     }
   )
-})
+});
 
 app.listen(3001, () => {
   console.log("running express server");
