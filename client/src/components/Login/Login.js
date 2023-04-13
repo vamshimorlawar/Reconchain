@@ -20,6 +20,8 @@ const Login = () => {
     }).then((res) => {
       if(res.data.status === "success"){
         console.log("Login Successful");
+        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("email", email);
         navigate(res.data.location)
       }else{
         console.log("Login Failed");

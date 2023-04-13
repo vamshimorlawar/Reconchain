@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './CandidateHome.module.css';
+import CandidateNav from '../CandidateNav/CandidateNav';
 
 const CandidateHome = () => (
-  <div className={styles.CandidateHome}>
-    CandidateHome Component
+  
+  <div>
+    <CandidateNav></CandidateNav>
   </div>
 );
 
