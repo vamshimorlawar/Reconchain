@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import styles from "./CompanyHome.module.css";
+import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
 import CompanyNav from "../CompanyNav/CompanyNav";
 import CompanyJobCard from "../CompanyJobCard/CompanyJobCard";
@@ -21,6 +22,7 @@ const CompanyHome = () => {
     setJobData(res.data.posts);
   };
   if (jobData) {
+    toast.success("Jobs fetched successfully")
     const postItems = [];
     jobData.forEach((job) => {
       postItems.push(
@@ -35,6 +37,7 @@ const CompanyHome = () => {
     return (
       <div>
         <CompanyNav></CompanyNav>
+        <ToastContainer/>
         <div>
           <Link to="/company-job-post">
             <div className="p-3"

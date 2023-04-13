@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CompanyProfile.module.css";
+import { ToastContainer, toast } from 'react-toastify';
 import CompanyNav from "../CompanyNav/CompanyNav";
 import axios from "axios";
 
@@ -44,14 +45,17 @@ const CompanyProfile = () => {
       .then((res) => {
         if (res.data.status === "success") {
           console.log("Profile updated");
+          toast.success("Updated Profile");
         } else {
           console.log("Update Failed");
+          toast.error("Update Failed");
         }
       });
   };
   return (
     <div>
       <CompanyNav></CompanyNav>
+      <ToastContainer/>
       <div className="w-50 m-3">
         <Form onSubmit={updateProfile}>
           <Form.Group controlId="formUsername">

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { useState } from "react";
 
+
 import Greeter from "./artificats/contracts/greetings.sol/Greeter.json";
 import "./App.css";
 import Auth from "./components/Auth/Auth";
@@ -82,7 +83,6 @@ function App() {
       {/* <div>App</div> */}
       {/* <Link to="/signup">Sign Up</Link>
       <Link to="/login">Login</Link> */}
-
       <Auth></Auth>
 
       <div style={{ display: "none" }}>

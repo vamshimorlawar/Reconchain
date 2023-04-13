@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import styles from './Login.module.css';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const Login = () => {
     }).then((res) => {
       if(res.data.status === "success"){
         console.log("Login Successful");
+        toast.success("Login Successful");
         sessionStorage.setItem("loggedIn", "true");
         sessionStorage.setItem("email", email);
         navigate(res.data.location)
@@ -30,6 +33,7 @@ const Login = () => {
   }
 
   return (
+    <div>
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
@@ -48,6 +52,7 @@ const Login = () => {
         Submit
       </Button>
     </Form>
+    </div>
   );
 };
 
