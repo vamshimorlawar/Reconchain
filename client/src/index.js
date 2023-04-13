@@ -7,6 +7,7 @@ import CandidateHome from "./components/CandidateHome/CandidateHome";
 import CandidateProfile from "./components/CandidateProfile/CandidateProfile";
 import CompanyHome from "./components/CompanyHome/CompanyHome";
 import CompanyProfile from "./components/CompanyProfile/CompanyProfile";
+import CompanyJobPost from "./components/CompanyJobPost/CompanyJobPost";
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
@@ -42,6 +43,7 @@ root.render(
         }
       />
       <Route path="/company-profile" element={<CompanyProfile />} />
+      <Route path="/company-job-post" element={<CompanyJobPost />} />
 
       {/* <Route path="*" element={<App />} /> */}
     </Routes>
