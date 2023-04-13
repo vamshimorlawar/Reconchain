@@ -24,47 +24,49 @@ app.post("/signup", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  const userType = req.body.userType;
 
   if (password == confirmPassword) {
     const query =
-      "INSERT INTO user_account (name, email, password) VALUES (?,?,?)";
-    db.query(
-      query,
-      [username, email, password, confirmPassword],
-      (err, result) => {
-        console.log(err, result);
-        res.send({ status: "Success" });
+      "INSERT INTO user_account (name, email, password, userType) VALUES (?,?,?,?)";
+    db.query(query, [username, email, password, userType], (err, result) => {
+      if(err){
+        res.send({
+          status: "failure",
+        });    
+      }else{
+        res.send({ status: "success" });
       }
-    );
+    });
   } else {
-    res.send({ status: "Failure" });
+    res.send({
+      status: "password didnt match",
+    });
   }
 });
 
-app.post("/login", (req,res) => {
+app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
   const query = "SELECT * FROM user_account WHERE email = ? AND password = ?";
-
-  db.query(
-    query, [email, password],
-    (err,result) => {
-      if(err) {
-        res.send({err:err})
-      }
-      if(result.length > 0){
-        console.log(result);
-        res.send({status: "Success"});
-      }
-      else{
-        console.log("fail");
-        res.send({status:"Failure"});
-      }
-
+  db.query(query, [email, password], (err, result) => {
+    if (err) {
+      res.send({ status: "failure" });
     }
-  )
-
+    if (result.length > 0) {
+      if(result[0].userType == "candidate"){
+        location = "/candidate-home"
+      }
+      if(result[0].userType == "company"){
+        location = "/company-home"
+      }
+      console.log(location);
+      res.send({ status: "success", location: location });
+    } else {
+      res.send({ status: "no data found"});
+    }
+  });
 });
 
 app.listen(3001, () => {

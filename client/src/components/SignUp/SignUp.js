@@ -1,73 +1,99 @@
 import React, { useState } from "react";
-import styles from "./SignUp.module.css";
-import axios from "axios";
-import { useNavigate } from "react-router";
+import { Form, Button } from "react-bootstrap";
+import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+import PropTypes from 'prop-types';
+import styles from './Signup.module.css';
 
-function SignUp() {
-  const [userNameReg, setUserNameReg] = useState("");
-  const [passwordReg, setPassword] = useState("");
-  const [emailReg, setEmail] = useState("");
-  const [confirmPasswordReg, setConfirmPassword] = useState("");
-  const [flag, setFlag] = useState(false);
+const Signup = () => {
   const navigate = useNavigate();
-  const signup = () => {
-    axios
-      .post("http://localhost:3001/signup", {
-        username: userNameReg,
-        password: passwordReg,
-        email: emailReg,
-        confirmPassword: confirmPasswordReg,
-      })
-      .then((res) => {
-        if (res.data.status === "Success") {
-          console.log("aagya");
-          navigate("/");
-        } else {
-          console.log("nhi aaya");
-          setFlag(true);
-        }
-      });
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState("candidate"); // default value is "candidate"
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // prevent the form from reloading the page
+    // add code to submit the form data to the server
+    axios.post("http://localhost:3001/signup", {
+      username: username,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      userType: userType
+    }).then((res) => {
+      if(res.data.status === "success"){
+        navigate("/login");
+      }else{
+        console.log("Signup Failed");
+      }
+    })
   };
+
   return (
-    <div className={styles.SignUp}>
-      <h1>Register here</h1>
-      <label>User Name</label>
-      <input
-        type="text"
-        onChange={(e) => {
-          setUserNameReg(e.target.value);
-        }}
-      />
-      <label>Email Address</label>
-      <input
-        type="email"
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      />
-      <label>Password</label>
-      <input
-        type="password"
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      />
-      <label>Confirm Password</label>
-      <input
-        type="password"
-        onChange={(e) => {
-          setConfirmPassword(e.target.value);
-        }}
-      />
-      {flag === 1 && <div>Password Wrong</div>}
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formUsername">
+        <Form.Label>Username</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+        />
+      </Form.Group>
 
-      <button onClick={signup}>Submit</button>
-    </div>
+      <Form.Group controlId="formEmail">
+        <Form.Label>Email address</Form.Label>
+        <Form.Control
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group controlId="formPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group controlId="formConfirmPassword">
+        <Form.Label>Confirm Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(event) => setConfirmPassword(event.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group controlId="formUserType">
+        <Form.Label>User Type</Form.Label>
+        <Form.Control
+          as="select"
+          value={userType}
+          onChange={(event) => setUserType(event.target.value)}
+        >
+          <option value="candidate">Candidate</option>
+          <option value="company">Company</option>
+        </Form.Control>
+      </Form.Group>
+
+      <Button variant="primary" type="submit">
+        Sign Up
+      </Button>
+    </Form>
   );
-}
+};
 
-SignUp.propTypes = {};
+Signup.propTypes = {};
 
-SignUp.defaultProps = {};
+Signup.defaultProps = {};
 
-export default SignUp;
+export default Signup;

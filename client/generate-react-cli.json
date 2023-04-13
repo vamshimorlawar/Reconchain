@@ -12,5 +12,5 @@
       "withLazy": false
     }
   },
-  "usesStyledComponents": true
+  "usesStyledComponents": false
 }

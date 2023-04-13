@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Greeter from "./artificats/contracts/greetings.sol/Greeter.json";
 import "./App.css";
+import Auth from "./components/Auth/Auth";
 
 // The contract address
 const greeterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -79,9 +80,11 @@ function App() {
    }
   return(
     <div>
-      <div>App</div>
-      <Link to="/signup">Sign Up</Link>
-      <Link to="/login">Login</Link>
+      {/* <div>App</div> */}
+      {/* <Link to="/signup">Sign Up</Link>
+      <Link to="/login">Login</Link> */}
+      
+      <Auth></Auth>
       
       
       <div style={{display: "none"}}>
