@@ -25,7 +25,7 @@ const CompanyNav = () => {
       </Navbar.Collapse>
       <Nav className="justify-content-end">
         <Nav.Item>
-          <span className="navbar-text text-warning">{email}</span>
+          <span className="navbar-text text-warning">Company - {email}</span>
         </Nav.Item>
       </Nav>
     </Navbar>

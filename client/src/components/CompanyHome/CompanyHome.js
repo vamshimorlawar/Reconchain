@@ -37,9 +37,19 @@ const CompanyHome = () => {
         <CompanyNav></CompanyNav>
         <div>
           <Link to="/company-job-post">
-            <button className="btn btn-warning mx-3 my-2 ">
-              Add New Job Post
-            </button>
+            <div className="p-3"
+              style={{
+                backgroundColor: "white",
+                width: "100%",
+                position: "sticky",
+                top: "50px",
+                zIndex: "1",
+              }}
+            >
+              <button className="btn btn-warning mx-3">
+                Add New Job Post
+              </button>
+            </div>
           </Link>
           <div>{postItems}</div>
         </div>
