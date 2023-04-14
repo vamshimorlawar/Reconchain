@@ -331,7 +331,6 @@ app.post("/deleteJob", (req, res) => {
     }
   });
 });
-
 app.post("/getUnappliedJobs", (req,res) => {
   const candidate_email = req.body.candidate_email;
   const query = `SELECT * FROM job_posts WHERE (company_email, id) NOT IN (SELECT company_email, job_id FROM application WHERE candidate_email = ?)`;
@@ -343,6 +342,50 @@ app.post("/getUnappliedJobs", (req,res) => {
     } else {
       console.log(result);
       res.send({ status: "success" , posts: result});
+    }
+  });
+});
+
+app.post("/deleteCandidateProfile", (req, res) => {
+  const email = req.body.email;
+  const query = "DELETE FROM candidate_profile WHERE email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 = "DELETE FROM user_account WHERE email = ?";
+      db.query(query_2, [email], (err, result)=>{
+        if (err) {
+          console.log(err);
+          res.send({ status: "failure" });
+        } else {
+          res.send({ status: "success" });
+        }
+      });
+    }
+  });
+});
+
+app.post("/deleteCompanyProfile", (req, res) => {
+  const email = req.body.email;
+  const query = "DELETE FROM company_profile WHERE email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 = "DELETE FROM user_account WHERE email = ?";
+      db.query(query_2, [email], (err, result)=>{
+        if (err) {
+          console.log(err);
+          res.send({ status: "failure" });
+        } else {
+          res.send({ status: "success" });
+        }
+      });
     }
   });
 });
