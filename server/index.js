@@ -288,6 +288,48 @@ app.post("/reportJob", (req, res) => {
   });
 });
 
+app.post("/getJobPost", (req, res) => {
+  const id = req.body.id;
+  const email = req.body.email;
+  const query = "SELECT * FROM job_posts WHERE id = ? AND company_email = ?";
+
+  db.query(query, [id, email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", posts: result });
+    }
+  });
+});
+
+app.post("/updateJobPost", (req, res) => {
+  const id = req.body.id;
+  const company_email = req.body.email;
+  const title = req.body.title;
+  const description = req.body.description;
+  const tag = req.body.tag;
+  const location = req.body.location;
+  const type = req.body.type;
+  const salary = req.body.salary;
+
+  const query =
+    "UPDATE job_posts SET title = ?, description = ?, tag = ?, location = ?, type = ?, salary = ? WHERE id = ? AND company_email = ?";
+
+  db.query(
+    query,
+    [title, description, tag, location, type, salary, id, company_email],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({ status: "failure" });
+      } else {
+        res.send({ status: "success" });
+      }
+    }
+  );
+});
+
 app.listen(3001, () => {
   console.log("running express server");
 });

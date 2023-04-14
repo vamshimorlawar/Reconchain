@@ -5,12 +5,18 @@ import styles from "./CompanyJobCard.module.css";
 import jobImage from "../../images/job.png";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CompanyJobCard = (props) => {
   const id = props.id;
   const title = props.title;
   const description = props.description;
   const location = props.location;
+  const navigate = useNavigate();
+
+  const updateJob = () => {
+    navigate(`/company-update-job-post/${id}`);
+  }
 
   const deleteJob = () => {
     axios.post("http://localhost:3001/deleteJob", {id: id}).then((res) => {
@@ -44,7 +50,7 @@ const CompanyJobCard = (props) => {
               Description - {description}
             </Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
-              <Button variant="primary">Update</Button>
+              <Button variant="primary" onClick={updateJob}>Update</Button>
               <Button variant="danger" onClick={deleteJob}>Delete</Button>
               <Button variant="info">Applicants</Button>
             </div>

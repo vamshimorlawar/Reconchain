@@ -13,6 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import CompanyUpdateJobPost from "./components/CompanyUpdateJobPost/CompanyUpdateJobPost";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -44,6 +45,7 @@ root.render(
       />
       <Route path="/company-profile" element={<CompanyProfile />} />
       <Route path="/company-job-post" element={<CompanyJobPost />} />
+      <Route path="/company-update-job-post/:id" element={<CompanyUpdateJobPost/>} />
 
       {/* <Route path="*" element={<App />} /> */}
     </Routes>
