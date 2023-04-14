@@ -4,6 +4,7 @@ import styles from './CandidateHome.module.css';
 import CandidateJobCard from "../CandidateJobCard/CandidateJobCard";
 import CandidateNav from '../CandidateNav/CandidateNav';
 import axios from "axios";
+import { ToastContainer } from "react-bootstrap";
 
 const CandidateHome = () => {
   const [jobData, setJobData] = useState(null);
@@ -23,6 +24,7 @@ const CandidateHome = () => {
       postItems.push(
         <CandidateJobCard
           key={job.id}
+          id={job.id}
           title={job.title}
           description={job.description}
           location={job.location}
@@ -33,6 +35,7 @@ const CandidateHome = () => {
     return (
       <div>
         <CandidateNav></CandidateNav>
+        <ToastContainer/>
         <div>{postItems}</div>
       </div>
     );

@@ -23,7 +23,6 @@ const CompanyHome = () => {
   };
 
   if (jobData) {
-    
     toast.success("Jobs fetched successfully")
     const postItems = [];
     jobData.forEach((job) => {

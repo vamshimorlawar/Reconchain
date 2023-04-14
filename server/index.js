@@ -224,33 +224,27 @@ app.post("/getJobPosts", (req, res) => {
   const email = req.body.email;
   const query = "SELECT * FROM job_posts WHERE company_email = ?";
 
-  db.query(
-    query, [email], (err, result) => {
-      if(err){
-        console.log(err);
-        res.send({ status: "failure"});
-      }else{
-        res.send({status: "success", posts: result});
-      }
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", posts: result });
     }
-  )
+  });
 });
 
 app.get("/getJobPosts", (req, res) => {
-
   const query = "SELECT * FROM job_posts";
 
-  db.query(
-    query, (err, result) => {
-      if(err){
-        console.log(err);
-        res.send({ status: "failure"});
-      }else{
-        console.log("All row data", result);
-        res.send({status: "success", posts: result});
-      }
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", posts: result });
     }
-  )
+  });
 });
 
 app.post("/deleteJob", (req, res) => {
@@ -258,13 +252,40 @@ app.post("/deleteJob", (req, res) => {
   const query = "DELETE FROM job_posts WHERE id = ?";
 
   db.query(query, [id], (err, result) => {
-    if(err){
+    if (err) {
       console.log(err);
-      res.send({ status: "failure"});
-    }else{
-      res.send({status: "success"});
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success" });
     }
-  })
+  });
+});
+
+app.post("/reportJob", (req, res) => {
+  const id = req.body.id;
+  const email = req.body.email;
+  const query_1 =
+    "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
+
+  db.query(query_1, [id, email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      reportValue = result[0].report;
+      const query =
+        "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
+
+      db.query(query, [reportValue + 1, id, email], (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({ status: "failure" });
+        } else {
+          res.send({ status: "success" });
+        }
+      });
+    }
+  });
 });
 
 app.listen(3001, () => {
