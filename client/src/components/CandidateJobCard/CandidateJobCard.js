@@ -5,6 +5,7 @@ import styles from "./CandidateJobCard.module.css";
 import jobImage from "../../images/job.png";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CandidateJobCard = (props) => {
   const id = props.id;
@@ -14,12 +15,19 @@ const CandidateJobCard = (props) => {
   const email = props.email;
   const report = props.report;
 
+  const navigate = useNavigate();
+
   const [showPopup, setShowPopup] = useState(false);
   const handlePopup = () => {
     setShowPopup(!showPopup);
   };
 
+  const handleApply = () => {
+    navigate(`/candidate-job-apply/${id}/${email}`);
+  }
+
   const handleReport = () => {
+    document.getElementById("report").disabled = true;
     axios.post("http://localhost:3001/reportJob", {id: id, email: email}).then((res)=>{
       if(res.data.status === "success"){
         console.log("Reported Successfully");
@@ -30,6 +38,7 @@ const CandidateJobCard = (props) => {
       }else{
         console.log("Report failed");
         toast.error("Report Failed");
+        document.getElementById("report").disabled = false;
       }
     })
   };
@@ -52,8 +61,8 @@ const CandidateJobCard = (props) => {
             </Card.Text>
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
-              <Button variant="primary">Apply</Button>
-              <Button variant="danger" onClick={handleReport} disabled={report > 0}>Report</Button>
+              <Button variant="primary" onClick={handleApply}>Apply</Button>
+              <Button variant="danger" id="report" onClick={handleReport} disabled={report > 0}>Report</Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>

@@ -214,6 +214,7 @@ app.post("/addJobPost", (req, res) => {
         console.log(err);
         res.send({ status: "failure" });
       } else {
+        
         res.send({ status: "success" });
       }
     }

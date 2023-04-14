@@ -5,6 +5,7 @@ import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
 import CandidateHome from "./components/CandidateHome/CandidateHome";
 import CandidateProfile from "./components/CandidateProfile/CandidateProfile";
+import CandidateJobApplication from "./components/CandidateJobApplication/CandidateJobApplication";
 import CompanyHome from "./components/CompanyHome/CompanyHome";
 import CompanyProfile from "./components/CompanyProfile/CompanyProfile";
 import CompanyJobPost from "./components/CompanyJobPost/CompanyJobPost";
@@ -33,6 +34,7 @@ root.render(
         }
       />
       <Route path="/candidate-profile" element={<CandidateProfile />} />
+      <Route path="/candidate-job-apply/:id/:company_email" element={<CandidateJobApplication />} />
       <Route
         path="/company-home"
         element={
