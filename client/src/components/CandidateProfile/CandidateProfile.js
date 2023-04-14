@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CandidateProfile.module.css";
+import { toast } from "react-toastify";
 import CandidateNav from "../CandidateNav/CandidateNav";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CandidateProfile = () => {
   const [formData, setFormData] = useState(null);
   const email = sessionStorage.getItem("email");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -28,6 +31,22 @@ const CandidateProfile = () => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const deleteProfile = () => {
+    axios.post("http://localhost:3001/deleteCandidateProfile", {email: email}).then((res)=>{
+      if(res.data.status === "success"){
+        console.log("Profile Deleted Succesfully");
+        toast.success("Profile Deleted Successfully", { autoClose: 1999 });
+        setTimeout(() => {
+          sessionStorage.clear();
+          navigate('/login');
+        }, 2000);
+      }else{
+        console.log("Profile Delete Failed");
+        toast.error("Profile Delete Failed");
+      }
+    });
+  }
 
   const updateProfile = (event) => {
     event.preventDefault();
@@ -146,6 +165,10 @@ const CandidateProfile = () => {
 
           <Button variant="primary" type="submit" className="mt-3">
             Update Profile
+          </Button>
+
+          <Button variant="danger" onClick={deleteProfile} className="mt-3 mx-5">
+            Delete Profile
           </Button>
         </Form>
       </div>

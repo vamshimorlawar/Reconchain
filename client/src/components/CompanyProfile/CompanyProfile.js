@@ -5,11 +5,12 @@ import styles from "./CompanyProfile.module.css";
 import { ToastContainer, toast } from 'react-toastify';
 import CompanyNav from "../CompanyNav/CompanyNav";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CompanyProfile = () => {
   const [formData, setFormData] = useState(null);
-
   const email = sessionStorage.getItem("email");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -30,6 +31,22 @@ const CompanyProfile = () => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const deleteProfile = () => {
+    axios.post("http://localhost:3001/deleteCompanyProfile", {email: email}).then((res)=>{
+      if(res.data.status === "success"){
+        console.log("Profile Deleted Succesfully");
+        toast.success("Profile Deleted Successfully", { autoClose: 1999 });
+        setTimeout(() => {
+          sessionStorage.clear();
+          navigate('/login');
+        }, 2000);
+      }else{
+        console.log("Profile Delete Failed");
+        toast.error("Profile Delete Failed");
+      }
+    });
+  }
 
   const updateProfile = (event) => {
     event.preventDefault();
@@ -150,6 +167,9 @@ const CompanyProfile = () => {
 
           <Button variant="primary" type="submit" className="mt-3">
             Update Profile
+          </Button>
+          <Button variant="danger" onClick={deleteProfile} className="mt-3 mx-5">
+            Delete Profile
           </Button>
         </Form>
       </div>
