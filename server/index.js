@@ -1,6 +1,18 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
+
+// create reusable transporter object using the default SMTP transport
+let transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "reconchaincs@gmail.com", // replace with your email address
+    pass: "odrnduiomlqqdwkh", // replace with your email password
+  },
+});
 
 const app = express();
 
@@ -195,26 +207,22 @@ app.post("/updateCompanyProfile", (req, res) => {
   );
 });
 
-app.post("/createApplicationProfile", (req,res) => {
+app.post("/createApplicationProfile", (req, res) => {
   const candidate_email = req.body.candidate_email;
   const company_email = req.body.company_email;
   const job_id = req.body.job_id;
 
-  const query = "INSERT INTO application (candidate_email, company_email, job_id) VALUES (?, ?, ?)";
+  const query =
+    "INSERT INTO application (candidate_email, company_email, job_id) VALUES (?, ?, ?)";
 
-  db.query( 
-    query,
-    [candidate_email,company_email,job_id],
-    (err,result) => {
-      if (err) {
-        console.log(err);
-        res.send({ status: "failure" });
-      } else {
-        
-        res.send({ status: "success" });
-      }
+  db.query(query, [candidate_email, company_email, job_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success" });
     }
-  );
+  });
 });
 
 app.post("/addJobPost", (req, res) => {
@@ -237,7 +245,38 @@ app.post("/addJobPost", (req, res) => {
         console.log(err);
         res.send({ status: "failure" });
       } else {
-        
+        const query_2 = "SELECT * FROM candidate_profile WHERE interests = ?";
+        db.query(query_2, [tag], (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            let recipients = [];
+            result.forEach((candidate) => {
+              recipients.push(candidate.email);
+            });
+            // setup email data with unicode symbols
+            let mailOptions = {
+              from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
+              subject: "Reconchain: New Job Post " + title, // Subject line
+              text: "Hello, " + title + " Description: " + description, // plain text body
+              html: "<div>" + title + "</div><div>" + description + "</div><div> Location: "+ location +"</div><div> Salary: "+ salary + "</div><div>Type: "+ type+"</div><b>Thank you, Reconchain</b>", // html body
+            };
+            // send mail to each recipient
+            for (let i = 0; i < recipients.length; i++) {
+              mailOptions.to = recipients[i];
+              // send mail with defined transport object
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  return console.log(error);
+                }
+                console.log(
+                  `Message sent to ${recipients[i]}: %s`,
+                  info.messageId
+                );
+              });
+            }
+          }
+        });
         res.send({ status: "success" });
       }
     }
@@ -258,34 +297,38 @@ app.post("/getJobPosts", (req, res) => {
   });
 });
 
-app.post("/getAppliedJobs",(req,res) => {
-
+app.post("/getAppliedJobs", (req, res) => {
   let jobList = [];
   let completedQueries = 0;
   const email = req.body.email;
-  const query = "SELECT company_email, job_id FROM application WHERE candidate_email = ?";
+  const query =
+    "SELECT company_email, job_id FROM application WHERE candidate_email = ?";
 
   db.query(query, [email], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
-      const query_2 = "SELECT * FROM job_posts WHERE id = ? AND company_email = ?";
-      for(let i = 0; i <result.length; i++)
-      {
-        db.query(query_2, [result[i].job_id, result[i].company_email], (err, result2) => {
-          if (err) {
-            console.log(err);
-            console.log("error inside 2nd query getappliedjob");
-            res.send({ status: "failure" });
-          } else {
-            jobList.push(result2);
-            completedQueries++;
-            if(completedQueries === result.length){              
-              res.send({ status: "success", posts: jobList });
+      const query_2 =
+        "SELECT * FROM job_posts WHERE id = ? AND company_email = ?";
+      for (let i = 0; i < result.length; i++) {
+        db.query(
+          query_2,
+          [result[i].job_id, result[i].company_email],
+          (err, result2) => {
+            if (err) {
+              console.log(err);
+              console.log("error inside 2nd query getappliedjob");
+              res.send({ status: "failure" });
+            } else {
+              jobList.push(result2);
+              completedQueries++;
+              if (completedQueries === result.length) {
+                res.send({ status: "success", posts: jobList });
+              }
             }
           }
-        }); 
+        );
       }
     }
   });
@@ -304,19 +347,17 @@ app.get("/getJobPosts", (req, res) => {
   });
 });
 
-app.get("/getCandidatesProfile",(req,res) => {
+app.get("/getCandidatesProfile", (req, res) => {
   const query = "SELECT * FROM candidate_profile";
 
-  db.query(query, (err,result) => {
-     if (err) {
+  db.query(query, (err, result) => {
+    if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
       res.send({ status: "success", posts: result });
     }
-
   });
-
 });
 
 app.post("/deleteJob", (req, res) => {
@@ -332,17 +373,17 @@ app.post("/deleteJob", (req, res) => {
     }
   });
 });
-app.post("/getUnappliedJobs", (req,res) => {
+app.post("/getUnappliedJobs", (req, res) => {
   const candidate_email = req.body.candidate_email;
   const query = `SELECT * FROM job_posts WHERE (company_email, id) NOT IN (SELECT company_email, job_id FROM application WHERE candidate_email = ?)`;
 
-  db.query(query, [candidate_email], (err,result) =>{
+  db.query(query, [candidate_email], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
       console.log(result);
-      res.send({ status: "success" , posts: result});
+      res.send({ status: "success", posts: result });
     }
   });
 });
@@ -383,7 +424,7 @@ app.post("/deleteCandidateProfile", (req, res) => {
       res.send({ status: "failure" });
     } else {
       const query_2 = "DELETE FROM user_account WHERE email = ?";
-      db.query(query_2, [email], (err, result)=>{
+      db.query(query_2, [email], (err, result) => {
         if (err) {
           console.log(err);
           res.send({ status: "failure" });
@@ -405,7 +446,7 @@ app.post("/deleteCompanyProfile", (req, res) => {
       res.send({ status: "failure" });
     } else {
       const query_2 = "DELETE FROM user_account WHERE email = ?";
-      db.query(query_2, [email], (err, result)=>{
+      db.query(query_2, [email], (err, result) => {
         if (err) {
           console.log(err);
           res.send({ status: "failure" });
@@ -500,25 +541,22 @@ app.post("/updateJobPost", (req, res) => {
   );
 });
 
-app.post("/getJobApplicants", (req, res)=>{
+app.post("/getJobApplicants", (req, res) => {
   const id = req.body.id;
   const email = req.body.email;
 
-  const query = "SELECT * FROM application WHERE company_email = ? AND job_id = ?";
+  const query =
+    "SELECT * FROM application WHERE company_email = ? AND job_id = ?";
 
-  db.query(
-    query, 
-    [email, id],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        res.send({ status: "failure" });
-      } else {
-        res.send({ status: "success", result: result });
-      }
+  db.query(query, [email, id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", result: result });
     }
-  );
-})
+  });
+});
 
 app.listen(3001, () => {
   console.log("running express server");
