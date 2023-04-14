@@ -4,13 +4,23 @@ import styles from "./CompanyJobApplication.module.css";
 import { useParams } from "react-router-dom";
 import CompanyNav from "../CompanyNav/CompanyNav";
 import axios from "axios";
-import { Card } from 'react-bootstrap';
+import { Card, Form, Button } from "react-bootstrap";
 
 const CompanyJobApplication = () => {
   const id = useParams().id;
   const company_email = sessionStorage.getItem("email");
 
   const [CandidateData, setCandidateData] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleRowSelect = (event) => {
+    setSelectedRow(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Selected row: ", selectedRow);
+  };
 
   useEffect(() => {
     fetchData();
@@ -56,38 +66,51 @@ const CompanyJobApplication = () => {
           </Card.Body>
         </Card>
         <div className="mt-5 mx-5 container">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>username</th>
-                <th>email</th>
-                <th>rating</th>
-                <th>interest</th>
-                <th>education</th>
-                <th>experience</th>
-                <th>skills</th>
-                <th>languages</th>
-                <th>mobile</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CandidateData.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{row.username}</td>
-                  <td>{row.email}</td>
-                  <td>{row.rating}</td>
-                  <td>{row.interests}</td>
-                  <td>{row.education}</td>
-                  <td>{row.experience}</td>
-                  <td>{row.skills}</td>
-                  <td>{row.languages}</td>
-                  <td>{row.mobile}</td>
+          <Form onSubmit={handleSubmit}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>id</th>
+                  <th>username</th>
+                  <th>email</th>
+                  <th>rating</th>
+                  <th>interest</th>
+                  <th>education</th>
+                  <th>experience</th>
+                  <th>skills</th>
+                  <th>languages</th>
+                  <th>mobile</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {CandidateData.map((row) => (
+                  <tr key={row.id}>
+                    <td>
+                      <Form.Check
+                        type="radio"
+                        name="rowSelect"
+                        value={row.id}
+                        onChange={handleRowSelect}
+                        checked={selectedRow === row.id}
+                      />
+                    </td>
+                    <td>{row.id}</td>
+                    <td>{row.username}</td>
+                    <td>{row.email}</td>
+                    <td>{row.rating}</td>
+                    <td>{row.interests}</td>
+                    <td>{row.education}</td>
+                    <td>{row.experience}</td>
+                    <td>{row.skills}</td>
+                    <td>{row.languages}</td>
+                    <td>{row.mobile}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Button type="submit" className="mt-5">Hire Candidate</Button>
+          </Form>
         </div>
       </div>
     </div>
