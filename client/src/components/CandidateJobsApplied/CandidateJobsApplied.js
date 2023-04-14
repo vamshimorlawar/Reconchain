@@ -49,7 +49,8 @@ const CandidateJobsApplied = () => {
   } else {
     return (
       <div>
-        <p>Loading Job Posts...</p>
+        <CandidateNav></CandidateNav>
+        <h3>No application yet</h3>
       </div>
     );
   }

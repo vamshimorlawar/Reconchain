@@ -303,6 +303,21 @@ app.get("/getJobPosts", (req, res) => {
   });
 });
 
+app.get("/getCandidatesProfile",(req,res) => {
+  const query = "SELECT * FROM candidate_profile";
+
+  db.query(query, (err,result) => {
+     if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", posts: result });
+    }
+
+  });
+
+});
+
 app.post("/deleteJob", (req, res) => {
   const id = req.body.id;
   const query = "DELETE FROM job_posts WHERE id = ?";
@@ -313,6 +328,21 @@ app.post("/deleteJob", (req, res) => {
       res.send({ status: "failure" });
     } else {
       res.send({ status: "success" });
+    }
+  });
+});
+
+app.post("/getUnappliedJobs", (req,res) => {
+  const candidate_email = req.body.candidate_email;
+  const query = `SELECT * FROM job_posts WHERE (company_email, id) NOT IN (SELECT company_email, job_id FROM application WHERE candidate_email = ?)`;
+
+  db.query(query, [candidate_email], (err,result) =>{
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      console.log(result);
+      res.send({ status: "success" , posts: result});
     }
   });
 });

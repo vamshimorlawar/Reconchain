@@ -15,7 +15,7 @@ const CandidateHome = () => {
   }, []);
 
   const fetchData = async () => {
-    const res = await axios.get("http://localhost:3001/getJobPosts");
+    const res = await axios.post("http://localhost:3001/getUnappliedJobs", {candidate_email:email});
     setJobData(res.data.posts);
   };
   if (jobData) {
@@ -42,6 +42,7 @@ const CandidateHome = () => {
     );
   } else {
     return (
+      
       <div>
         <p>Loading Job Posts...</p>
       </div>
