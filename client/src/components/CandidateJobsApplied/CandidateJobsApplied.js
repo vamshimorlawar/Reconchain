@@ -3,11 +3,8 @@ import PropTypes from 'prop-types';
 import styles from './CandidateJobsApplied.module.css';
 import CandidateNav from '../CandidateNav/CandidateNav';
 import CandidateJobCard from "../CandidateJobCard/CandidateJobCard";
-
 import axios from "axios";
 import { ToastContainer } from "react-bootstrap";
-
-
 
 const CandidateJobsApplied = () => {
   const [jobData, setJobData] = useState(null);

@@ -55,6 +55,10 @@ const CandidateJobCard = (props) => {
           />
           <div className="p-3" style={{ width: "50%" }}>
             <Card.Title className="mb-1">{title}</Card.Title>
+            {(report>=2) ? (
+        <Card.Title style={{ color: "red" }}>{"Fraudluent job post!!!"}</Card.Title>
+      ) : null}
+            {/* <Card.Title className="mb-1">{report}</Card.Title> */}
             <Card.Text className="mb-1">
               Company - {email}, Location -
               <i className="fas fa-map-marker-alt mr-2"></i>
