@@ -15,7 +15,6 @@ const CandidateJobCard = (props) => {
   const email = props.email;
   const report = props.report;
   const hideApply = props.hideApply? props.hideApply : false;
-
   const navigate = useNavigate();
 
   const [showPopup, setShowPopup] = useState(false);

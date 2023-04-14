@@ -7,13 +7,6 @@ import CandidateNav from "../CandidateNav/CandidateNav";
 import { useParams } from "react-router-dom";
 
 const CandidateJobApplication = () => {
-
-  // for (let i = 0; i < sessionStorage.length; i++) {
-  //   let key = sessionStorage.key(i);
-  //   let value = sessionStorage.getItem(key);
-  //   console.log(key + " = " + value);
-  // }
-
   const id = useParams().id;
   const company_email = useParams().company_email;
 

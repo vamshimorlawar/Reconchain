@@ -106,6 +106,7 @@ app.post("/getCandidateProfile", (req, res) => {
     if (result.length > 0) {
       res.send({
         status: "success",
+        id: result[0].id,
         username: result[0].username,
         email: result[0].email,
         rating: result[0].rating,
@@ -458,6 +459,26 @@ app.post("/updateJobPost", (req, res) => {
     }
   );
 });
+
+app.post("/getJobApplicants", (req, res)=>{
+  const id = req.body.id;
+  const email = req.body.email;
+
+  const query = "SELECT * FROM application WHERE company_email = ? AND job_id = ?";
+
+  db.query(
+    query, 
+    [email, id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({ status: "failure" });
+      } else {
+        res.send({ status: "success", result: result });
+      }
+    }
+  );
+})
 
 app.listen(3001, () => {
   console.log("running express server");

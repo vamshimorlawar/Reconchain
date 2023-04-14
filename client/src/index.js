@@ -18,6 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import CompanyUpdateJobPost from "./components/CompanyUpdateJobPost/CompanyUpdateJobPost";
+import CompanyJobApplication from "./components/CompanyJobApplication/CompanyJobApplication";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,8 +38,14 @@ root.render(
         }
       />
       <Route path="/candidate-profile" element={<CandidateProfile />} />
-      <Route path="/candidate-job-apply/:id/:company_email" element={<CandidateJobApplication />} />
-      <Route path="/candidate-jobs-applied" element={<CandidateJobsApplied/>} />
+      <Route
+        path="/candidate-job-apply/:id/:company_email"
+        element={<CandidateJobApplication />}
+      />
+      <Route
+        path="/candidate-jobs-applied"
+        element={<CandidateJobsApplied />}
+      />
       <Route
         path="/company-home"
         element={
@@ -51,10 +58,15 @@ root.render(
       />
       <Route path="/company-profile" element={<CompanyProfile />} />
       <Route path="/company-job-post" element={<CompanyJobPost />} />
-      <Route path="/company-update-job-post/:id" element={<CompanyUpdateJobPost/>} />
-      <Route path="/view-all-candidates" element={<CandidateCard/>} />
-
-
+      <Route
+        path="/company-update-job-post/:id"
+        element={<CompanyUpdateJobPost />}
+      />
+      <Route
+        path="/company-job-applicants/:id"
+        element={<CompanyJobApplication />}
+      />
+      <Route path="/view-all-candidates" element={<CandidateCard />} />
 
       {/* <Route path="*" element={<App />} /> */}
     </Routes>

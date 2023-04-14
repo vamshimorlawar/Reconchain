@@ -47,14 +47,10 @@ const CandidateJobsApplied = () => {
     return (
       <div>
         <CandidateNav></CandidateNav>
-        <h3>No application yet</h3>
+        <h3 className='mt-3 mx-3'>No application yet</h3>
       </div>
     );
   }
-
-
-
-
 };
 CandidateJobsApplied.propTypes = {};
 
