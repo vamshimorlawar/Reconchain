@@ -47,7 +47,7 @@ const CandidateJobApplication = () => {
             <p className="text-justify">{jobData.description}</p>
             <hr />
             <p>Salary: ${jobData.salary} per year</p>
-            <p>Tags: ${jobData.tag}</p>
+            <p>Tags: {jobData.tag}</p>
           </Col>
         </Row>
         <Row className="justify-content-center">
