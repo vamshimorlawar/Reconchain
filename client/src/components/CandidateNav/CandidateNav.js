@@ -20,7 +20,7 @@ const CandidateNav = () => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ml-auto">
           <Nav.Link href="/candidate-home">Home</Nav.Link>
-          <Nav.Link href="#applied">Applied</Nav.Link>
+          <Nav.Link href="/candidate-jobs-applied">Applied</Nav.Link>
           <Nav.Link href="/candidate-profile">Profile</Nav.Link>
           <Nav.Link onClick={logout}>Logout</Nav.Link>
         </Nav>

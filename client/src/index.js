@@ -4,11 +4,14 @@ import App from "./App";
 import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
 import CandidateHome from "./components/CandidateHome/CandidateHome";
+import CandidateCard from "./components/CandidateCard/CandidateCard";
 import CandidateProfile from "./components/CandidateProfile/CandidateProfile";
 import CandidateJobApplication from "./components/CandidateJobApplication/CandidateJobApplication";
 import CompanyHome from "./components/CompanyHome/CompanyHome";
 import CompanyProfile from "./components/CompanyProfile/CompanyProfile";
 import CompanyJobPost from "./components/CompanyJobPost/CompanyJobPost";
+import CandidateJobsApplied from "./components/CandidateJobsApplied/CandidateJobsApplied";
+
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
@@ -35,6 +38,7 @@ root.render(
       />
       <Route path="/candidate-profile" element={<CandidateProfile />} />
       <Route path="/candidate-job-apply/:id/:company_email" element={<CandidateJobApplication />} />
+      <Route path="/candidate-jobs-applied" element={<CandidateJobsApplied/>} />
       <Route
         path="/company-home"
         element={
@@ -48,6 +52,9 @@ root.render(
       <Route path="/company-profile" element={<CompanyProfile />} />
       <Route path="/company-job-post" element={<CompanyJobPost />} />
       <Route path="/company-update-job-post/:id" element={<CompanyUpdateJobPost/>} />
+      <Route path="/view-all-candidates" element={<CandidateCard/>} />
+
+
 
       {/* <Route path="*" element={<App />} /> */}
     </Routes>

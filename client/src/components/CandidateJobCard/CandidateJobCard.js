@@ -14,6 +14,7 @@ const CandidateJobCard = (props) => {
   const location = props.location;
   const email = props.email;
   const report = props.report;
+  const hideApply = props.hideApply? props.hideApply : false;
 
   const navigate = useNavigate();
 
@@ -61,7 +62,7 @@ const CandidateJobCard = (props) => {
             </Card.Text>
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
-              <Button variant="primary" onClick={handleApply}>Apply</Button>
+              <Button variant="primary" onClick={handleApply} style={{display: hideApply? "none":"block"}}>Apply</Button>
               <Button variant="danger" id="report" onClick={handleReport} disabled={report > 0}>Report</Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact

@@ -194,6 +194,28 @@ app.post("/updateCompanyProfile", (req, res) => {
   );
 });
 
+app.post("/createApplicationProfile", (req,res) => {
+  const candidate_email = req.body.candidate_email;
+  const company_email = req.body.company_email;
+  const job_id = req.body.job_id;
+
+  const query = "INSERT INTO application (candidate_email, company_email, job_id) VALUES (?, ?, ?)";
+
+  db.query( 
+    query,
+    [candidate_email,company_email,job_id],
+    (err,result) => {
+      if (err) {
+        console.log(err);
+        res.send({ status: "failure" });
+      } else {
+        
+        res.send({ status: "success" });
+      }
+    }
+  );
+});
+
 app.post("/addJobPost", (req, res) => {
   const company_email = req.body.company_email;
   const title = req.body.title;
@@ -231,6 +253,39 @@ app.post("/getJobPosts", (req, res) => {
       res.send({ status: "failure" });
     } else {
       res.send({ status: "success", posts: result });
+    }
+  });
+});
+
+app.post("/getAppliedJobs",(req,res) => {
+
+  let jobList = [];
+  let completedQueries = 0;
+  const email = req.body.email;
+  const query = "SELECT company_email, job_id FROM application WHERE candidate_email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 = "SELECT * FROM job_posts WHERE id = ? AND company_email = ?";
+      for(let i = 0; i <result.length; i++)
+      {
+        db.query(query_2, [result[i].job_id, result[i].company_email], (err, result2) => {
+          if (err) {
+            console.log(err);
+            console.log("error inside 2nd query getappliedjob");
+            res.send({ status: "failure" });
+          } else {
+            jobList.push(result2);
+            completedQueries++;
+            if(completedQueries === result.length){              
+              res.send({ status: "success", posts: jobList });
+            }
+          }
+        }); 
+      }
     }
   });
 });
