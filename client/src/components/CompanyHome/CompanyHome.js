@@ -21,13 +21,16 @@ const CompanyHome = () => {
     });
     setJobData(res.data.posts);
   };
+
   if (jobData) {
+    
     toast.success("Jobs fetched successfully")
     const postItems = [];
     jobData.forEach((job) => {
       postItems.push(
         <CompanyJobCard
           key={job.id}
+          id = {job.id}
           title={job.title}
           description={job.description}
           location={job.location}

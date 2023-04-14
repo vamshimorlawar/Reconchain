@@ -3,12 +3,29 @@ import { Card, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CompanyJobCard.module.css";
 import jobImage from "../../images/job.png";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const CompanyJobCard = (props) => {
+  const id = props.id;
   const title = props.title;
   const description = props.description;
   const location = props.location;
 
+  const deleteJob = () => {
+    axios.post("http://localhost:3001/deleteJob", {id: id}).then((res) => {
+      if(res.data.status === "success"){
+        console.log("Job Deleted Succesfully");
+        toast.success("Job Deleted Successfully");
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }else{
+        console.log("Job Delete Failed");
+        toast.error("Job Delete Failed");
+      }
+    });
+  };
   return (
     <div>
       <Card className="my-3 px-3 w-50 mx-3 shadow">
@@ -28,7 +45,7 @@ const CompanyJobCard = (props) => {
             </Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
               <Button variant="primary">Update</Button>
-              <Button variant="danger">Delete</Button>
+              <Button variant="danger" onClick={deleteJob}>Delete</Button>
               <Button variant="info">Applicants</Button>
             </div>
           </div>

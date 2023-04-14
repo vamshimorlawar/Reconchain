@@ -49,7 +49,7 @@ const Login = () => {
       </Form.Group>
 
       <Button variant="primary" type="submit" className='mt-3'>
-        Submit
+        Login
       </Button>
     </Form>
     </Container>

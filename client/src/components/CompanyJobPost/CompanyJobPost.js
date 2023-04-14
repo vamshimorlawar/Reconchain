@@ -32,8 +32,8 @@ const CompanyJobPost = () => {
       .then((res) => {
         if (res.data.status === "success") {
           console.log("Job Posted");
-          navigate("/company-home");
           toast.success("Job Posted Successfully");
+          navigate("/company-home");
         } else {
           console.log("Job Post Failed");
           toast.error("Job Post Failed");

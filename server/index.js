@@ -88,7 +88,6 @@ app.post("/login", (req, res) => {
       if (result[0].userType == "company") {
         location = "/company-home";
       }
-      console.log(location);
       res.send({ status: "success", location: location });
     } else {
       res.send({ status: "no data found" });
@@ -252,6 +251,20 @@ app.get("/getJobPosts", (req, res) => {
       }
     }
   )
+});
+
+app.post("/deleteJob", (req, res) => {
+  const id = req.body.id;
+  const query = "DELETE FROM job_posts WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if(err){
+      console.log(err);
+      res.send({ status: "failure"});
+    }else{
+      res.send({status: "success"});
+    }
+  })
 });
 
 app.listen(3001, () => {
