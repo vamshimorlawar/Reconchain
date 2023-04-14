@@ -8,7 +8,8 @@ contract Reconchain {
         string name;
         string email;
         uint256 rewardPoints;
-        // mapping(address => bool) jobApplications;
+        uint256 jobApplications;
+        mapping (address=> uint)applicationsForCompany;
     }
     
 
@@ -16,6 +17,7 @@ contract Reconchain {
         string name;
         string email;
         uint256 rewardPoints;
+        uint256 activeJobPosting;
         uint256 totalJobPosting;
         // mapping(uint256 => JobPosting) jobPostings;
         // mapping(address => bool) jobOffers;
@@ -25,17 +27,18 @@ contract Reconchain {
         string title;
         string description;
         address company;
-        uint256 rewardPoints;
-        address[] selectedCandidates;
+        bool active;
+        address[] appliedCandidates;
+        address selectedCandidate;
     }
     
     mapping(address => Candidate) public candidates;
     mapping(address => Company) public companies;
-    mapping(address => JobPosting[]) public jobPostings;
+    mapping(address => mapping(uint256 => JobPosting)) public jobPostings;
     
-    uint256 public maxCandidateApplications = 10;
-    uint256 public maxCompanyPostings = 10;
-    uint256 public maxHiresPerRole = 2;
+    uint256 private constant maxCandidateApplications = 10;
+    uint256 private constant maxCompanyPostings = 10;
+    uint256 private constant maxHiresPerRole = 2;
     
     event CandidateProfileCreated(address candidateAddress);
     event CandidateProfileUpdated(address candidateAddress);
@@ -43,14 +46,14 @@ contract Reconchain {
     event CompanyProfileCreated(address companyAddress);
     event CompanyProfileUpdated(address companyAddress);
     event CompanyProfileDeleted(address companyAddress);
-    event JobPostingCreated(address jobPostingAddress, uint256);
-    event JobPostingUpdated(address jobPostingAddress);
-    event JobPostingDeleted(address jobPostingAddress);
-    event JobApplicationCreated(address candidateAddress, address jobPostingAddress);
-    event JobApplicationDeleted(address candidateAddress, address jobPostingAddress);
-    event JobOfferCreated(address companyAddress, address candidateAddress, address jobPostingAddress);
+    event JobPostingCreated(address jobPostingCompanyAddress, uint256);
+    event JobPostingUpdated(address jobPostingCompanyAddress, uint256);
+    event JobPostingDeleted(address jobPostingCompanyAddress, uint256);
+    event JobApplicationCreated(address candidateAddress, uint postIndex, address jobCompanyAddress);
+    // event JobApplicationDeleted(address candidateAddress, address jobPostingAddress);
+    // event JobOfferCreated(address companyAddress, address candidateAddress, address jobPostingAddress);
     event JobOfferAccepted(address companyAddress, address candidateAddress, address jobPostingAddress);
-    event JobOfferRejected(address companyAddress, address candidateAddress, address jobPostingAddress);
+    // event JobOfferRejected(address companyAddress, address candidateAddress, address jobPostingAddress);
     
     modifier onlyCandidate() {
         require(bytes(candidates[msg.sender].name).length != 0, "Not a candidate");
@@ -125,28 +128,92 @@ contract Reconchain {
     
     // delete company
     function deleteCompanyProfile() public onlyCompany {
-        delete companies[msg.sender];
-        delete jobPostings[msg.sender];
-        
+        for(uint256 i =1; i<=companies[msg.sender].totalJobPosting; i++){
+            jobPostings[msg.sender][i].active = false;
+
+        }
+        delete companies[msg.sender]; 
         emit CompanyProfileDeleted(msg.sender);
     }
 
 
     // jobposting creating
     function createJobPosting(string memory title, string memory description) public onlyCompany{
-        require(companies[msg.sender].totalJobPosting <= maxCompanyPostings,"You already have maximum active job postings");
+        require(companies[msg.sender].activeJobPosting < maxCompanyPostings,"You already have maximum active job postings");
+
         uint256 tempIndex = companies[msg.sender].totalJobPosting;
+        
 
         JobPosting memory temp ;
         temp.title = title;
         temp.description = description;
         temp.company = msg.sender;
+        temp.active = true;
         
-        jobPostings[msg.sender].push(temp);
-        emit JobPostingCreated(msg.sender, tempIndex);
         companies[msg.sender].totalJobPosting +=1;
+        companies[msg.sender].activeJobPosting +=1;
+
+        jobPostings[msg.sender][tempIndex+1] = temp;
+        emit JobPostingCreated(msg.sender, tempIndex+1);
+    }
+    // updating job posting
+
+    function UpdateJobPosting(uint256 ind,string memory title, string memory description) public onlyCompany{
+        
+        require(bytes(jobPostings[msg.sender][ind].title).length != 0, "job posting does not exist exists");
+        require(jobPostings[msg.sender][ind].active == true, "the post is not active anymore");
+        jobPostings[msg.sender][ind].title = title;
+        jobPostings[msg.sender][ind].description = description;
+
+        emit JobPostingUpdated(msg.sender, ind);
+    }
+    //deleting job posting
+
+    function DeleteJobPosting(uint256 ind) public onlyCompany{
+
+        require(bytes(jobPostings[msg.sender][ind].title).length != 0, "job posting does not exist exists");
+        jobPostings[msg.sender][ind].active = false;
+        companies[msg.sender].activeJobPosting -=1;
+
+        emit JobPostingDeleted(msg.sender, ind);
+    }
+
+    // candidate application for the job
+    function createJobApplication(uint256 ind, address companyAddress) public onlyCandidate{
+        require(candidates[msg.sender].jobApplications < maxCandidateApplications,"You already have maximum active job applications");
+        require(candidates[msg.sender].applicationsForCompany[companyAddress] < maxHiresPerRole,"You already have maximum active job applications for this company");
+        require(jobPostings[companyAddress][ind].active == true, "the post is not active anymore");
+
+
+        
+        candidates[msg.sender].jobApplications += 1;
+        candidates[msg.sender].applicationsForCompany[companyAddress] +=1;
+        jobPostings[companyAddress][ind].appliedCandidates.push(msg.sender);
+
+
+    emit JobApplicationCreated(msg.sender, ind, companyAddress);
     }
 
 
-    // TODO:funciton that will return all the posts by that company given their address
+    // company accepting job application for the candidate
+    function acceptingJobOffer(uint256 ind, address candidateAddress) public onlyCompany{
+        require(bytes(candidates[candidateAddress].name).length != 0, "Candidate profile does not exists");
+        require(jobPostings[msg.sender][ind].active == true, "the post is not active anymore");
+        require((jobPostings[candidateAddress][ind].selectedCandidate) == address(0), "Candidate already selected for this post");
+
+        address[] memory templist = jobPostings[msg.sender][ind].appliedCandidates;
+        uint256 templen = jobPostings[msg.sender][ind].appliedCandidates.length;
+        for(uint256 i=0; i<templen; i++){
+            candidates[templist[i]].jobApplications -= 1;
+            candidates[templist[i]].applicationsForCompany[msg.sender] -=1;
+        }
+
+        candidates[candidateAddress].jobApplications -= 1;
+        candidates[candidateAddress].applicationsForCompany[msg.sender] -=1;
+        jobPostings[msg.sender][ind].active = false;
+        jobPostings[msg.sender][ind].selectedCandidate = candidateAddress;
+
+
+    emit JobApplicationCreated(candidateAddress, ind, msg.sender);
+    }
 }
