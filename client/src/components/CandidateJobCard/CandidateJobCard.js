@@ -13,12 +13,15 @@ const CandidateJobCard = (props) => {
   const location = props.location;
   const email = props.email;
 
+  const [isReportDisabled, setIsReportDisabled] = useState(false);
+
   const [showPopup, setShowPopup] = useState(false);
   const handlePopup = () => {
     setShowPopup(!showPopup);
   };
 
   const handleReport = () => {
+    setIsReportDisabled(true);
     axios.post("http://localhost:3001/reportJob", {id: id, email: email}).then((res)=>{
       if(res.data.status === "success"){
         console.log("Reported Successfully");
@@ -49,7 +52,7 @@ const CandidateJobCard = (props) => {
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
               <Button variant="primary">Apply</Button>
-              <Button variant="danger" onClick={handleReport}>Report</Button>
+              <Button variant="danger" onClick={handleReport} disabled={isReportDisabled}>Report</Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>
