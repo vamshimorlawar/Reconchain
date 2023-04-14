@@ -16,7 +16,7 @@ const CompanyJobCard = (props) => {
     axios.post("http://localhost:3001/deleteJob", {id: id}).then((res) => {
       if(res.data.status === "success"){
         console.log("Job Deleted Succesfully");
-        toast.success("Job Deleted Successfully");
+        toast.success("Job Deleted Successfully", { autoClose: 1999 });
         setTimeout(() => {
           window.location.reload();
         }, 2000);

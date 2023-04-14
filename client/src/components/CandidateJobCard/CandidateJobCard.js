@@ -12,8 +12,7 @@ const CandidateJobCard = (props) => {
   const description = props.description;
   const location = props.location;
   const email = props.email;
-
-  const [isReportDisabled, setIsReportDisabled] = useState(false);
+  const report = props.report;
 
   const [showPopup, setShowPopup] = useState(false);
   const handlePopup = () => {
@@ -21,11 +20,13 @@ const CandidateJobCard = (props) => {
   };
 
   const handleReport = () => {
-    setIsReportDisabled(true);
     axios.post("http://localhost:3001/reportJob", {id: id, email: email}).then((res)=>{
       if(res.data.status === "success"){
         console.log("Reported Successfully");
-        toast.success("Reported Job!")
+        toast.success("Reported Job!", { autoClose: 1999 });
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }else{
         console.log("Report failed");
         toast.error("Report Failed");
@@ -52,7 +53,7 @@ const CandidateJobCard = (props) => {
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
               <Button variant="primary">Apply</Button>
-              <Button variant="danger" onClick={handleReport} disabled={isReportDisabled}>Report</Button>
+              <Button variant="danger" onClick={handleReport} disabled={report > 0}>Report</Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>

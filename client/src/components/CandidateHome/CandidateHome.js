@@ -29,6 +29,7 @@ const CandidateHome = () => {
           description={job.description}
           location={job.location}
           email={job.company_email}
+          report={job.report}
         />
       );
     });
