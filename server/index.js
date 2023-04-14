@@ -347,6 +347,32 @@ app.post("/getUnappliedJobs", (req,res) => {
   });
 });
 
+app.post("/getJobReportFlag",(req,res) => {
+  console.log("getJobReportFlag");
+  const candidate_email = req.body.candidate_email;
+  const job_id = req.body.job_id;
+
+  const query = "SELECT * FROM job_report_history WHERE candidate_email = ? AND job_id = ?";
+  db.query(query, [candidate_email, job_id], (err,result) =>{
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      console.log(result);
+      if(result.length == 1)
+      {
+        res.send({ status: "success" , report_flag: 1});
+      }
+      else{
+        res.send({ status: "success" , report_flag: 0});
+      }
+      
+    }
+  });
+
+
+});
+
 app.post("/deleteCandidateProfile", (req, res) => {
   const email = req.body.email;
   const query = "DELETE FROM candidate_profile WHERE email = ?";
@@ -392,30 +418,44 @@ app.post("/deleteCompanyProfile", (req, res) => {
 });
 
 app.post("/reportJob", (req, res) => {
-  const id = req.body.id;
-  const email = req.body.email;
-  const query_1 =
-    "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
+  const id = req.body.id; // job id
+  const email = req.body.company_email; //company email
+  const candidate_email = req.body.candidate_email;
 
-  db.query(query_1, [id, email], (err, result) => {
+  const query_2 = "INSERT INTO job_report_history (candidate_email, job_id, report_flag) VALUES (?, ?, ?)"
+
+  db.query(query_2, [candidate_email, id, 1], (err, result) => {
     if (err) {
-      console.log(err);
-      res.send({ status: "failure" });
+      res.send({
+        status: "failure",
+      });
     } else {
-      reportValue = result[0].report;
-      const query =
-        "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
-
-      db.query(query, [reportValue + 1, id, email], (err, result) => {
+      console.log("success");
+      db.query(query_1, [id, email], (err, result) => {
         if (err) {
           console.log(err);
           res.send({ status: "failure" });
         } else {
-          res.send({ status: "success" });
+          reportValue = result[0].report;
+          const query =
+            "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
+    
+          db.query(query, [reportValue + 1, id, email], (err, result) => {
+            if (err) {
+              console.log(err);
+              res.send({ status: "failure" });
+            } else {
+              res.send({ status: "success" });
+            }
+          });
         }
-      });
-    }
+      });    }
   });
+
+  const query_1 =
+    "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
+
+  
 });
 
 app.post("/getJobPost", (req, res) => {
