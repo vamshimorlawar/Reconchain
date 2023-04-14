@@ -2,13 +2,14 @@ import { Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { useState } from "react";
 
-
 import Greeter from "./artificats/contracts/greetings.sol/Greeter.json";
+import Reconchain from "./artificats/contracts/Reconchain.sol/Reconchain.json";
 import "./App.css";
 import Auth from "./components/Auth/Auth";
 
 // The contract address
 const greeterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const reconchainAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 function App() {
   // Property Variables
@@ -78,14 +79,45 @@ function App() {
       fetchGreeting();
     }
   }
+
+  async function createCandidateProfile() {
+    if (typeof window.ethereum !== "undefined") {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      // Create contract with signer
+      /*
+         function setGreeting(string memory _greeting) public {
+           console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
+           greeting = _greeting;
+         } 
+       */
+      const contract = new ethers.Contract(
+        reconchainAddress,
+        Reconchain.abi,
+        signer
+      );
+
+      contract.on("CandidateProfileCreated", function (event) {
+        console.log("Result Candidate Address", event);
+      });
+    }
+  }
   return (
     <div>
       {/* <div>App</div> */}
       {/* <Link to="/signup">Sign Up</Link>
       <Link to="/login">Login</Link> */}
       <Auth></Auth>
-
-      <div style={{ display: "none" }}>
+      <button
+        onClick={createCandidateProfile}
+        style={{ backgroundColor: "green" }}
+      >
+        createCandidateProfile
+      </button>
+      <div style={{}}>
         <div className="custom-buttons">
           <button onClick={fetchGreeting} style={{ backgroundColor: "green" }}>
             Fetch Greeting

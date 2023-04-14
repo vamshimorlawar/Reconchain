@@ -41,7 +41,12 @@ async function main() {
 
   await greeter.deployed();
 
+  const Reconchain = await hre.ethers.getContractFactory("Reconchain");
+  const reconchain = await Reconchain.deploy("Hello, Hardhat!");
+  await reconchain.deployed();
+
   console.log("Greeter deployed to:", greeter.address);
+  console.log("Reconchain deployed to:", reconchain.address);
 }
 
 main()
