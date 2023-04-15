@@ -1,37 +1,37 @@
-# reconchain
-CS731 Project Group 1
-Ayush Kothiyal
-Deepak Mathur
-Vinay Agrawal
-Vamshikiran Morlawar
+# ReconChain
 
-STEPS TO RUN THIS PROJECT
-- install node
-- git clone or download this project files from the repository
-- There are 2 main directories - client, server and a .sql file
--- delete package.lock.json files from the files then
-- Go to client folder and run >npm install (this will install dependencies)
-- Go to server folder and run >npm install (this will install dependencies)
-- install hardhat
-- Now, you'll have the packages installed (if any package missing use npm to install)
-- install MetaMask extension in your browser
-- install XAMPP, or other software to run MySQL servers
+This project is developed by CS731 Project Group 1, consisting of Ayush Kothiyal, Deepak Mathur, Vinay Agrawal, and Vamshikiran Morlawar. ReconChain is a decentralized platform that facilitates secure, transparent, and efficient communication between parties involved in a construction project.
 
-Go to client folder
-- run command >npm run start (Starts React Application)
-- run command >npx hardhat compile (Compiles contract)
-- run command >npx hardhat node (Run blockchain and gives to accounts to use)
-- run command >npx hardhat run scripts/deploy.js --network localhost (Deploy contract on blockchain)
+## Steps to Run the Project
 
-Go to server folder
-- run command >node index.js (Starts backend server)
+To run this project, follow the below steps:
 
-- Add Localhost RPC accounts to MetaMask
-- Import accounts by pasting the private keys from blockchain terminal (previous hardhat node command)
+1. Install Node.js
+2. Clone or download this project from the repository.
+3. Delete `package.lock.json` files from the client and server folders.
+4. Go to the client folder and run `npm install` to install dependencies.
+5. Go to the server folder and run `npm install` to install dependencies.
+6. Install Hardhat.
+7. Now, you'll have the packages installed. If any package is missing, use npm to install it.
+8. Install the MetaMask extension in your browser.
+9. Install XAMPP or other software to run MySQL servers.
+10. Go to the client folder and run the following commands:
+    - `npm run start` (Starts the React application)
+    - `npx hardhat compile` (Compiles the contract)
+    - `npx hardhat node` (Runs the blockchain and gives two accounts to use)
+    - `npx hardhat run scripts/deploy.js --network localhost` (Deploys the contract on the blockchain)
+11. Go to the server folder and run `node index.js` to start the backend server.
+12. Add Localhost RPC accounts to MetaMask.
+13. Import accounts by pasting the private keys from the blockchain terminal (previous hardhat node command).
+14. Open localhost/phpmyadmin and import the .sql file to view the database and table data.
+15. Follow the above steps, and the application will get started on localhost on your browser.
 
-- Open localhost/phpmyadmin and import the .sql file to view the database and table data
+## Technologies Used
 
-- Following above steps will get the application get started on localhost on your browser.
+ReconChain is developed using the following technologies:
 
-Technologies used - 
-React, Node, MySQL, Solidity, Hardhat
+- React
+- Node.js
+- MySQL
+- Solidity
+- Hardhat
