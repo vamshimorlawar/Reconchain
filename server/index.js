@@ -294,7 +294,18 @@ app.post("/addJobPost", (req, res) => {
               from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
               subject: "Reconchain: New Job Post " + title, // Subject line
               text: "Hello, " + title + " Description: " + description, // plain text body
-              html: "<div>" + title + "</div><div>" + description + "</div><div> Location: "+ location +"</div><div> Salary: "+ salary + "</div><div>Type: "+ type+"</div><b>Thank you, Reconchain</b>", // html body
+              html:
+                "<div>" +
+                title +
+                "</div><div>" +
+                description +
+                "</div><div> Location: " +
+                location +
+                "</div><div> Salary: " +
+                salary +
+                "</div><div>Type: " +
+                type +
+                "</div><b>Thank you, Reconchain</b>", // html body
             };
             // send mail to each recipient
             for (let i = 0; i < recipients.length; i++) {
@@ -623,14 +634,15 @@ app.post("/getJobApplicants", (req, res) => {
   });
 });
 
-app.post("/hireCandidate", (req, res)=>{
+app.post("/hireCandidate", (req, res) => {
   const job_id = req.body.job_id;
   const company_email = req.body.company_email;
   const candidate_email = req.body.candidate_email;
 
-  const query = "INSERT INTO hiring (company_email, job_id, candidate_email) VALUES (?,?,?)";
+  const query =
+    "INSERT INTO hiring (company_email, job_id, candidate_email) VALUES (?,?,?)";
 
-  db.query(query, [company_email, job_id, candidate_email], (err, result)=>{
+  db.query(query, [company_email, job_id, candidate_email], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
@@ -640,7 +652,14 @@ app.post("/hireCandidate", (req, res)=>{
         from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
         subject: "Reconchain: Congratulations!", // Subject line
         text: "Hello, ", // plain text body
-        html: "<div>" + candidate_email + "</div><div>You are hired by "+ company_email +" for the job "+ job_id +"</div><b>Thank you, Reconchain</b>", // html body
+        html:
+          "<div>" +
+          candidate_email +
+          "</div><div>You are hired by " +
+          company_email +
+          " for the job " +
+          job_id +
+          "</div><b>Thank you, Reconchain</b>", // html body
       };
       //send email
       mailOptions.to = candidate_email;
@@ -648,22 +667,18 @@ app.post("/hireCandidate", (req, res)=>{
         if (error) {
           return console.log(error);
         }
-        console.log(
-          `Message sent to ${recipients[i]}: %s`,
-          info.messageId
-        );
+        console.log(`Message sent to ${recipients[i]}: %s`, info.messageId);
       });
-      res.send({ status: "success", hired: candidate_email});
+      res.send({ status: "success", hired: candidate_email });
     }
-  })
+  });
 });
 
 app.post("/getHiredCandidate", (req, res) => {
   const job_id = req.body.job_id;
   const company_email = req.body.company_email;
 
-  const query =
-    "SELECT * FROM hiring WHERE company_email = ? AND job_id = ?";
+  const query = "SELECT * FROM hiring WHERE company_email = ? AND job_id = ?";
 
   db.query(query, [company_email, job_id], (err, result) => {
     if (err) {
@@ -677,7 +692,8 @@ app.post("/getHiredCandidate", (req, res) => {
 
 app.post("/numberJobsApplied", (req, res) => {
   const email = req.body.email;
-  const query = "SELECT COUNT(*) as count FROM application WHERE candidate_email = ?;";
+  const query =
+    "SELECT COUNT(*) as count FROM application WHERE candidate_email = ?;";
   db.query(query, [email], (err, result) => {
     if (err) {
       console.log(err);
@@ -692,13 +708,28 @@ app.post("/checkAlreadyApplied", (req, res) => {
   const candiadate_email = req.body.candidate_email;
   const company_email = req.body.company_email;
   console.log(candiadate_email, company_email);
-  const query = "SELECT COUNT(*) as count FROM application WHERE candidate_email = ? AND company_email = ?;";
+  const query =
+    "SELECT COUNT(*) as count FROM application WHERE candidate_email = ? AND company_email = ?;";
   db.query(query, [candiadate_email, company_email], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
       console.log("count", result[0].count);
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
+});
+
+app.post("/numberCompanyJobPosts", (req, res) => {
+  const email = req.body.email;
+  const query =
+    "SELECT COUNT(*) as count FROM job_posts WHERE company_email = ?;";
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
       res.send({ status: "success", count: result[0].count });
     }
   });

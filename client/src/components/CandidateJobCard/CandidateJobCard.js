@@ -91,11 +91,11 @@ const CandidateJobCard = (props) => {
 
     if (!(doubleApply || maxApplication)) {
       navigate(`/candidate-job-apply/${id}/${email}`);
-    };
+    }
   };
 
   const handleReport = () => {
-    const candidate_email = sessionStorage.getItem("email")
+    const candidate_email = sessionStorage.getItem("email");
     document.getElementById("report").disabled = true;
     axios
       .post("http://localhost:3001/reportJob", {
