@@ -38,8 +38,7 @@ const CandidateProfile = () => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-
-
+  // UPDATE -----------------------------------------
   async function updateCandidateProfile() {
     async function requestAccount() {
       await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -96,27 +95,69 @@ const CandidateProfile = () => {
   const updateProfile = async (event) => {
     event.preventDefault();
     await updateCandidateProfile();
-}
-  const deleteProfile = () => {
-    axios
-      .post("http://localhost:3001/deleteCandidateProfile", { email: email })
-      .then((res) => {
-        if (res.data.status === "success") {
-          console.log("Profile Deleted Succesfully");
-          toast.success("Profile Deleted Successfully", { autoClose: 1999 });
-          setTimeout(() => {
-            sessionStorage.clear();
-            navigate("/login");
-          }, 2000);
-        } else {
-          console.log("Profile Delete Failed");
-          toast.error("Profile Delete Failed");
-        }
-      });
+  };
+
+  // DELETE -----------------------------------------
+  async function  deleteCandidateProfile() {
+    async function requestAccount() {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+    }
+
+    if (typeof window.ethereum !== "undefined") {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      const contract = new ethers.Contract(
+        reconchainAddress,
+        Reconchain.abi,
+        signer
+      );
+      try {
+        await contract.deleteCandidateProfile();
+        contract.on("CandidateProfileDeleted", function (address, event) {
+          let blockNumber = event.blockNumber;
+          if (eventBlocks.has(blockNumber)) return;
+          eventBlocks.add(blockNumber);
+
+          console.log("Result Candidate Address", address);
+          console.log("Address inside submit", address);
+          if (address) {
+            axios
+              .post("http://localhost:3001/deleteCandidateProfile", {
+                email: email,
+              })
+              .then((res) => {
+                if (res.data.status === "success") {
+                  console.log("Profile Deleted Succesfully");
+                  toast.success("Profile Deleted Successfully", {
+                    autoClose: 1999,
+                  });
+                  setTimeout(() => {
+                    sessionStorage.clear();
+                    navigate("/login");
+                  }, 2000);
+                } else {
+                  console.log("Profile Delete Failed");
+                  toast.error("Profile Delete Failed");
+                }
+              });
+          }
+        });
+      } catch (error) {
+        toast.error(regex.exec(error.reason)[1]);
+        console.log("Error is ", regex.exec(error.reason)[1]);
+      }
+    }
+  };
+  const deleteProfile = async (event) => {
+    event.preventDefault();
+    await deleteCandidateProfile();
   };
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer />
       <CandidateNav></CandidateNav>
       <ToastContainer />
       <div className="w-50 m-3">
@@ -227,7 +268,6 @@ const CandidateProfile = () => {
     </div>
   );
 };
-  
 
 CandidateProfile.propTypes = {};
 

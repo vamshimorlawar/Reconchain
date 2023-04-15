@@ -53,7 +53,7 @@ const Signup = () => {
               password: password,
               confirmPassword: confirmPassword,
               userType: userType,
-              address: address,
+              address: address
             })
             .then((res) => {
               if (res.data.status === "success") {
@@ -101,7 +101,7 @@ const Signup = () => {
               password: password,
               confirmPassword: confirmPassword,
               userType: userType,
-              address: address,
+              address: address
             })
             .then((res) => {
               if (res.data.status === "success") {

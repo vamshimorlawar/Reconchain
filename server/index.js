@@ -37,16 +37,17 @@ app.post("/signup", (req, res) => {
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
   const userType = req.body.userType;
+  const address = req.body.address;
 
   if (password == confirmPassword) {
     const query =
-      "INSERT INTO user_account (name, email, password, userType) VALUES (?,?,?,?)";
+      "INSERT INTO user_account (name, email, password, userType, address) VALUES (?,?,?,?,?)";
     const query_2 =
       "INSERT INTO candidate_profile (username, email, rating,	interests	,education	,experience,	skills,	languages,	mobile) VALUES (?,?,?,?,?,?,?,?,?)";
 
     const query_3 =
       "INSERT INTO company_profile (username, email, rating, company_name, location, mobile, website, about, number_job_posts) VALUES (?,?,?,?,?,?,?,?,?)";
-    db.query(query, [username, email, password, userType], (err, result) => {
+    db.query(query, [username, email, password, userType, address], (err, result) => {
       if (err) {
         res.send({
           status: "failure",
