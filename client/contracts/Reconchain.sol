@@ -116,7 +116,6 @@ contract Reconchain {
         companies[msg.sender].email = email;
         companies[msg.sender].rewardPoints = 0;
 
-
         emit CompanyProfileCreated(msg.sender);
     }
 
@@ -146,10 +145,7 @@ contract Reconchain {
     // jobposting creating
     function createJobPosting(string memory title, string memory description) public onlyCompany{
         require(companies[msg.sender].activeJobPosting < maxCompanyPostings,"You already have maximum active job postings");
-
         uint256 tempIndex = companies[msg.sender].totalJobPosting;
-        
-
         JobPosting memory tempJobPost ;
         tempJobPost.title = title;
         tempJobPost.description = description;
@@ -190,14 +186,11 @@ contract Reconchain {
         require(candidates[msg.sender].applicationsForCompany[companyAddress] < maxHiresPerRole,"You already have maximum active job applications for this company");
         require(jobPostings[companyAddress][ind].active == true, "the post is not active anymore");
 
-
-        
         candidates[msg.sender].jobApplications += 1;
         candidates[msg.sender].applicationsForCompany[companyAddress] +=1;
         jobPostings[companyAddress][ind].appliedCandidates.push(msg.sender);
 
-
-    emit JobApplicationCreated(msg.sender, ind, companyAddress);
+        emit JobApplicationCreated(msg.sender, ind, companyAddress);
     }
 
 
