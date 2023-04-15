@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 
 import { ethers } from "ethers";
 import Reconchain from "../../artificats/contracts/Reconchain.sol/Reconchain.json";
-import { toast, ToastContainer } from "react-toastify";
 // The contract address
 const reconchainAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 var eventBlocks = new Set();
@@ -114,7 +113,6 @@ const CandidateProfile = () => {
           toast.error("Profile Delete Failed");
         }
       });
-  };
   };
   return (
     <div>
@@ -229,6 +227,7 @@ const CandidateProfile = () => {
     </div>
   );
 };
+  
 
 CandidateProfile.propTypes = {};
 
