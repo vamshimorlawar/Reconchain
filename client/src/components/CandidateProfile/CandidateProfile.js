@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CandidateProfile.module.css";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import CandidateNav from "../CandidateNav/CandidateNav";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +65,10 @@ const CandidateProfile = () => {
       .then((res) => {
         if (res.data.status === "success") {
           console.log("dProfile updated");
+          toast.success("Profile Updated Successfully", {autoClose: 1999});
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         } else {
           console.log("Update Failed");
         }
@@ -72,6 +76,7 @@ const CandidateProfile = () => {
   };
   return (
     <div>
+      <ToastContainer/>
       <CandidateNav></CandidateNav>
       <div className="w-50 m-3">
         <Form onSubmit={updateProfile}>
