@@ -1,5 +1,9 @@
 # reconchain
-CS731 Project
+CS731 Project Group 1
+Ayush Kothiyal
+Deepak Mathur
+Vinay Agrawal
+Vamshikiran Morlawar
 
 STEPS TO RUN THIS PROJECT
 - install node
