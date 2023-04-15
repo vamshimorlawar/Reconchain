@@ -142,12 +142,47 @@ app.post("/updateCandidateProfile", (req, res) => {
   const languages = req.body.languages;
   const mobile = req.body.mobile;
 
-  const query =
-    "UPDATE candidate_profile SET interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+  let rating = 0;
+  if(interests ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(education ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(experience ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(skills ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(languages ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(mobile ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  // const rate = rating;
 
+  console.log("candi rating", rating);
+
+  const query =
+    "UPDATE candidate_profile SET rating = ?, interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+  
   db.query(
     query,
-    [interests, education, experience, skills, languages, mobile, email],
+    [rating, interests, education, experience, skills, languages, mobile, email],
     (err, result) => {
       if (err) {
         res.send({ status: "failure" });
