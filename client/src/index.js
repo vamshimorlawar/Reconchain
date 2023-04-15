@@ -37,15 +37,33 @@ root.render(
           )
         }
       />
-      <Route path="/candidate-profile" element={<CandidateProfile />} />
+
+      <Route
+        path="/candidate-profile"
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CandidateProfile />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
+      />
       <Route
         path="/candidate-job-apply/:id/:company_email"
         element={<CandidateJobApplication />}
       />
+
       <Route
         path="/candidate-jobs-applied"
-        element={<CandidateJobsApplied />}
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CandidateJobsApplied />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
       />
+
       <Route
         path="/company-home"
         element={
@@ -56,8 +74,27 @@ root.render(
           )
         }
       />
-      <Route path="/company-profile" element={<CompanyProfile />} />
-      <Route path="/company-job-post" element={<CompanyJobPost />} />
+      <Route
+        path="/company-profile"
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CompanyProfile />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
+      />
+
+      <Route
+        path="/company-job-post"
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CompanyJobPost />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
+      />
       <Route
         path="/company-update-job-post/:id"
         element={<CompanyUpdateJobPost />}
@@ -66,9 +103,19 @@ root.render(
         path="/company-job-applicants/:id"
         element={<CompanyJobApplication />}
       />
-      <Route path="/view-all-candidates" element={<CandidateCard />} />
+      {/* <Route path="/view-all-candidates" element={<CandidateCard />} /> */}
 
       {/* <Route path="*" element={<App />} /> */}
+      <Route
+        path="/view-all-candidates"
+        element={
+          sessionStorage.getItem("loggedIn") === "true" ? (
+            <CandidateCard />
+          ) : (
+            <Navigate replace to={"/"} />
+          )
+        }
+      />
     </Routes>
   </BrowserRouter>
 );
