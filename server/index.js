@@ -570,6 +570,24 @@ app.post("/hireCandidate", (req, res)=>{
       console.log(err);
       res.send({ status: "failure" });
     } else {
+      // setup email data with unicode symbols
+      let mailOptions = {
+        from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
+        subject: "Reconchain: Congratulations!", // Subject line
+        text: "Hello, ", // plain text body
+        html: "<div>" + candidate_email + "</div><div>You are hired by "+ company_email +" for the job "+ job_id +"</div><b>Thank you, Reconchain</b>", // html body
+      };
+      //send email
+      mailOptions.to = candidate_email;
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log(
+          `Message sent to ${recipients[i]}: %s`,
+          info.messageId
+        );
+      });
       res.send({ status: "success", hired: candidate_email});
     }
   })
