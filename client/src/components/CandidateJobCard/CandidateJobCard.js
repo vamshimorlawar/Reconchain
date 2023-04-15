@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Modal } from "react-bootstrap";
+import { Card, Button, Modal, Dropdown, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CandidateJobCard.module.css";
 import jobImage from "../../images/job.png";
@@ -16,13 +16,41 @@ const CandidateJobCard = (props) => {
   const report = props.report;
   const hideApply = props.hideApply ? props.hideApply : false;
   const report_flag = props.report_flag;
-  const candidate_email = sessionStorage.getItem("email");
+  console.log("candiCard",props.report_flag);
   const navigate = useNavigate();
 
   const [showPopup, setShowPopup] = useState(false);
 
   let doubleApply = false;
   let maxApplication = false;
+
+  const [show, setShow] = useState(false);
+  const [rating, setRating] = useState(0);
+
+  const handleRatingChange = (event) => {
+    setRating(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // You can do further processing with the selected rating value here
+    setShow(false);
+    console.log("Selected rating:", rating);
+
+    axios
+      .post("http://localhost:3001/updateCompanyRate", {
+        company_email: email,
+        company_rating: rating,
+      })
+      .then((res) => {
+        console.log("promise of updateCompanyRate", res.data.status);
+        if (res.data.status === "success") {
+          console.log("come from updateAPI successfully");
+        } else {
+          console.log("come from updateAPI failure");
+        }
+      });
+  };
 
   const handlePopup = () => {
     setShowPopup(!showPopup);
@@ -63,10 +91,11 @@ const CandidateJobCard = (props) => {
 
     if (!(doubleApply || maxApplication)) {
       navigate(`/candidate-job-apply/${id}/${email}`);
-    }
+    };
   };
 
   const handleReport = () => {
+    const candidate_email = sessionStorage.getItem("email")
     document.getElementById("report").disabled = true;
     axios
       .post("http://localhost:3001/reportJob", {
@@ -131,7 +160,9 @@ const CandidateJobCard = (props) => {
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>
-              <Button variant="warning">Rating</Button>
+              <Button variant="warning" onClick={() => setShow(true)}>
+                Rating
+              </Button>
             </div>
           </div>
         </div>
@@ -146,6 +177,31 @@ const CandidateJobCard = (props) => {
         <Modal.Footer>
           <Button onClick={handlePopup}>Close</Button>
         </Modal.Footer>
+      </Modal>
+      <Modal show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rate this item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formRating">
+              <Form.Label>Select a rating:</Form.Label>
+              <Form.Control
+                as="select"
+                value={rating}
+                onChange={handleRatingChange}
+              >
+                <option value="0">Choose...</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Form.Control>
+            </Form.Group>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </Modal.Body>
       </Modal>
     </div>
   );

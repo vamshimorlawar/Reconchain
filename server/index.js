@@ -388,30 +388,26 @@ app.post("/getUnappliedJobs", (req, res) => {
   });
 });
 
-app.post("/getJobReportFlag",(req,res) => {
-  console.log("getJobReportFlag");
+app.post("/getJobReportFlag", (req, res) => {
+  // console.log("getJobReportFlag");
   const candidate_email = req.body.candidate_email;
   const job_id = req.body.job_id;
 
-  const query = "SELECT * FROM job_report_history WHERE candidate_email = ? AND job_id = ?";
-  db.query(query, [candidate_email, job_id], (err,result) =>{
+  const query =
+    "SELECT * FROM job_report_history WHERE candidate_email = ? AND job_id = ?";
+  db.query(query, [candidate_email, job_id], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
-      console.log(result);
-      if(result.length == 1)
-      {
-        res.send({ status: "success" , report_flag: 1});
+      // console.log(result);
+      if (result.length == 1) {
+        res.send({ status: "success", report_flag: 1 });
+      } else {
+        res.send({ status: "success", report_flag: 0 });
       }
-      else{
-        res.send({ status: "success" , report_flag: 0});
-      }
-      
     }
   });
-
-
 });
 
 app.post("/deleteCandidateProfile", (req, res) => {
@@ -458,12 +454,47 @@ app.post("/deleteCompanyProfile", (req, res) => {
   });
 });
 
+app.post("/updateCompanyRate", (req, res) => {
+  console.log("bhak", req.body);
+  const company_email = req.body.company_email;
+  const company_rate = req.body.company_rating;
+  // console.log("type", typeof company_rate);
+  const query1 = "SELECT rating FROM company_profile WHERE email = ?";
+  const query2 = "UPDATE company_profile SET rating = ? WHERE email = ?";
+
+  db.query(query1, [company_email], (err, result) => {
+    if (err) {
+      res.send({
+        status: "fail",
+      });
+    } else {
+      // console.log("company current rating container",result);
+      rating = result[0].rating;
+      console.log("type", typeof rating);
+      final_rate = rating + parseInt(company_rate);
+      // console.log("company current rating value",rating);
+      db.query(query2, [final_rate, company_email], (err, result1) => {
+        if (err) {
+          res.send({
+            status: "fail",
+          });
+        } else {
+          res.send({
+            status: "success",
+          });
+        }
+      });
+    }
+  });
+});
+
 app.post("/reportJob", (req, res) => {
   const id = req.body.id; // job id
   const email = req.body.company_email; //company email
   const candidate_email = req.body.candidate_email;
 
-  const query_2 = "INSERT INTO job_report_history (candidate_email, job_id, report_flag) VALUES (?, ?, ?)"
+  const query_2 =
+    "INSERT INTO job_report_history (candidate_email, job_id, report_flag) VALUES (?, ?, ?)";
 
   db.query(query_2, [candidate_email, id, 1], (err, result) => {
     if (err) {
@@ -472,6 +503,9 @@ app.post("/reportJob", (req, res) => {
       });
     } else {
       console.log("success");
+      const query_1 =
+        "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
+
       db.query(query_1, [id, email], (err, result) => {
         if (err) {
           console.log(err);
@@ -480,7 +514,7 @@ app.post("/reportJob", (req, res) => {
           reportValue = result[0].report;
           const query =
             "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
-    
+
           db.query(query, [reportValue + 1, id, email], (err, result) => {
             if (err) {
               console.log(err);
@@ -490,13 +524,9 @@ app.post("/reportJob", (req, res) => {
             }
           });
         }
-      });    }
+      });
+    }
   });
-
-  const query_1 =
-    "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
-
-  
 });
 
 app.post("/getJobPost", (req, res) => {

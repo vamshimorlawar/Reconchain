@@ -33,20 +33,22 @@ const CandidateProfile = () => {
   };
 
   const deleteProfile = () => {
-    axios.post("http://localhost:3001/deleteCandidateProfile", {email: email}).then((res)=>{
-      if(res.data.status === "success"){
-        console.log("Profile Deleted Succesfully");
-        toast.success("Profile Deleted Successfully", { autoClose: 1999 });
-        setTimeout(() => {
-          sessionStorage.clear();
-          navigate('/login');
-        }, 2000);
-      }else{
-        console.log("Profile Delete Failed");
-        toast.error("Profile Delete Failed");
-      }
-    });
-  }
+    axios
+      .post("http://localhost:3001/deleteCandidateProfile", { email: email })
+      .then((res) => {
+        if (res.data.status === "success") {
+          console.log("Profile Deleted Succesfully");
+          toast.success("Profile Deleted Successfully", { autoClose: 1999 });
+          setTimeout(() => {
+            sessionStorage.clear();
+            navigate("/login");
+          }, 2000);
+        } else {
+          console.log("Profile Delete Failed");
+          toast.error("Profile Delete Failed");
+        }
+      });
+  };
 
   const updateProfile = (event) => {
     event.preventDefault();
@@ -167,7 +169,11 @@ const CandidateProfile = () => {
             Update Profile
           </Button>
 
-          <Button variant="danger" onClick={deleteProfile} className="mt-3 mx-5">
+          <Button
+            variant="danger"
+            onClick={deleteProfile}
+            className="mt-3 mx-5"
+          >
             Delete Profile
           </Button>
         </Form>
