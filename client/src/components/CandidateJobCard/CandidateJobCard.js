@@ -35,7 +35,6 @@ const CandidateJobCard = (props) => {
     event.preventDefault();
     // You can do further processing with the selected rating value here
     setShow(false);
-    console.log("Selected rating:", rating);
 
     axios
       .post("http://localhost:3001/updateCompanyRate", {
@@ -43,7 +42,6 @@ const CandidateJobCard = (props) => {
         company_rating: rating,
       })
       .then((res) => {
-        console.log("promise of updateCompanyRate", res.data.status);
         if (res.data.status === "success") {
           console.log("come from updateAPI successfully");
         } else {
@@ -191,7 +189,6 @@ const CandidateJobCard = (props) => {
                 value={rating}
                 onChange={handleRatingChange}
               >
-                <option value="0">Choose...</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -199,7 +196,9 @@ const CandidateJobCard = (props) => {
                 <option value="5">5</option>
               </Form.Control>
             </Form.Group>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" className="mt-3">
+              Rate
+            </Button>
           </Form>
         </Modal.Body>
       </Modal>
