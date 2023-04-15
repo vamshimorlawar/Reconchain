@@ -610,6 +610,20 @@ app.post("/getHiredCandidate", (req, res) => {
   });
 });
 
+app.post("/numberJobsApplied", (req, res) => {
+  const email = req.body.email;
+  const query = "SELECT COUNT(*) as count FROM application WHERE candidate_email = ?;";
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
+  
+});
+
 
 app.listen(3001, () => {
   console.log("running express server");

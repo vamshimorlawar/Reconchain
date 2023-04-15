@@ -8,47 +8,63 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const CandidateJobCard = (props) => {
-
   const id = props.id;
   const title = props.title;
   const description = props.description;
   const location = props.location;
   const email = props.email; //company email
   const report = props.report;
-  const hideApply = props.hideApply? props.hideApply : false;
+  const hideApply = props.hideApply ? props.hideApply : false;
   const report_flag = props.report_flag;
-  console.log("candiCard",props.report_flag);
+  const candidate_email = sessionStorage.getItem("email");
   const navigate = useNavigate();
 
   const [showPopup, setShowPopup] = useState(false);
+  const [maxJobReached, setMaxJobReached] = useState(false);
   const handlePopup = () => {
     setShowPopup(!showPopup);
   };
 
   const handleApply = () => {
-    navigate(`/candidate-job-apply/${id}/${email}`);
-  }
+    axios.post("http://localhost:3001/numberJobsApplied", { email: candidate_email }).then((res) => {
+      if (res.data.status === "success") {
+        if (res.data.count < 10) {
+          console.log(res.data.count);
+          navigate(`/candidate-job-apply/${id}/${email}`);
+        }else{
+          console.log("Cant Apply Max Jobs Reach", maxJobReached);
+          setMaxJobReached(true);
+          toast.error("You've reached your MAX LIMIT 10 to apply for Jobs");
+        }
+      };
+    });
+  };
 
   const handleReport = () => {
-    const candidate_email = sessionStorage.getItem("email")
     document.getElementById("report").disabled = true;
-    axios.post("http://localhost:3001/reportJob", {id: id, candidate_email: candidate_email, company_email:email}).then((res)=>{
-      if(res.data.status === "success"){
-        console.log("Reported Successfully");
-        toast.success("Reported Job!", { autoClose: 1999 });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      }else{
-        console.log("Report failed");
-        toast.error("Report Failed");
-        document.getElementById("report").disabled = false;
-      }
-    })
+    axios
+      .post("http://localhost:3001/reportJob", {
+        id: id,
+        candidate_email: candidate_email,
+        company_email: email,
+      })
+      .then((res) => {
+        if (res.data.status === "success") {
+          console.log("Reported Successfully");
+          toast.success("Reported Job!", { autoClose: 1999 });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          console.log("Report failed");
+          toast.error("Report Failed");
+          document.getElementById("report").disabled = false;
+        }
+      });
   };
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer />
       <Card className="my-3 px-3 w-50 mx-3 shadow">
         <div className="d-flex align-items-center">
           <Card.Img
@@ -58,9 +74,11 @@ const CandidateJobCard = (props) => {
           />
           <div className="p-3" style={{ width: "50%" }}>
             <Card.Title className="mb-1">{title}</Card.Title>
-            {(report>=2) ? (
-        <Card.Title style={{ color: "red" }}>{"Fraudulent job post!!!"}</Card.Title>
-      ) : null}
+            {report >= 2 ? (
+              <Card.Title style={{ color: "red" }}>
+                {"Fraudulent job post!!!"}
+              </Card.Title>
+            ) : null}
             {/* <Card.Title className="mb-1">{report}</Card.Title> */}
             <Card.Text className="mb-1">
               Company - {email}, Location -
@@ -69,8 +87,21 @@ const CandidateJobCard = (props) => {
             </Card.Text>
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
-              <Button variant="primary" onClick={handleApply} style={{display: hideApply? "none":"block"}}>Apply</Button>
-              <Button variant="danger" id="report" onClick={handleReport} disabled={report_flag > 0}>Report</Button>
+              <Button
+                variant="primary"
+                onClick={handleApply}
+                style={{ display: hideApply ? "none" : "block" }}
+              >
+                Apply
+              </Button>
+              <Button
+                variant="danger"
+                id="report"
+                onClick={handleReport}
+                disabled={report_flag > 0}
+              >
+                Report
+              </Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>
