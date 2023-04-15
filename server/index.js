@@ -47,15 +47,19 @@ app.post("/signup", (req, res) => {
 
     const query_3 =
       "INSERT INTO company_profile (username, email, rating, company_name, location, mobile, website, about, number_job_posts) VALUES (?,?,?,?,?,?,?,?,?)";
-    db.query(query, [username, email, password, userType, address], (err, result) => {
-      if (err) {
-        res.send({
-          status: "failure",
-        });
-      } else {
-        res.send({ status: "success" });
+    db.query(
+      query,
+      [username, email, password, userType, address],
+      (err, result) => {
+        if (err) {
+          res.send({
+            status: "failure",
+          });
+        } else {
+          res.send({ status: "success" });
+        }
       }
-    });
+    );
     if (userType === "candidate") {
       db.query(
         query_2,
@@ -143,47 +147,32 @@ app.post("/updateCandidateProfile", (req, res) => {
   const languages = req.body.languages;
   const mobile = req.body.mobile;
 
+  const fields = [interests, education, experience, skills, languages, mobile];
   let rating = 0;
-  if(interests ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  if(education ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  if(experience ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  if(skills ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  if(languages ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  if(mobile ===''){
-    rating += 0;
-  }else{
-    rating +=1;
-  }
-  // const rate = rating;
 
-  console.log("candi rating", rating);
+  for (let i = 0; i < fields.length; i++) {
+    if (fields[i] === "") {
+      rating += 0;
+    } else {
+      rating += 1;
+    }
+  }
 
   const query =
     "UPDATE candidate_profile SET rating = ?, interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
-  
+
   db.query(
     query,
-    [rating, interests, education, experience, skills, languages, mobile, email],
+    [
+      rating,
+      interests,
+      education,
+      experience,
+      skills,
+      languages,
+      mobile,
+      email,
+    ],
     (err, result) => {
       if (err) {
         res.send({ status: "failure" });
@@ -269,13 +258,15 @@ app.post("/addJobPost", (req, res) => {
   const location = req.body.location;
   const type = req.body.type;
   const salary = req.body.salary;
+  const block_job_id = req.body.block_job_id;
+  const address = req.body.address;
 
   const query =
-    "INSERT INTO job_posts (company_email, title, description, tag, location, type, salary, report) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO job_posts (company_email, title, description, tag, location, type, salary, report, address, block_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     query,
-    [company_email, title, description, tag, location, type, salary, 0],
+    [company_email, title, description, tag, location, type, salary, 0, address, block_job_id],
     (err, result) => {
       if (err) {
         console.log(err);

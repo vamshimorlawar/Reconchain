@@ -34,6 +34,7 @@ const CompanyHome = () => {
           title={job.title}
           description={job.description}
           location={job.location}
+          block_job_id={job.block_job_id}
         />
       );
     });

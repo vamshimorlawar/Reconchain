@@ -90,7 +90,7 @@ const CandidateProfile = () => {
         console.log("Error is ", regex.exec(error.reason)[1]);
       }
     }
-  }
+  };
 
   const updateProfile = async (event) => {
     event.preventDefault();
