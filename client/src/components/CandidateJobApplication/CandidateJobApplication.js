@@ -44,7 +44,7 @@ const CandidateJobApplication = () => {
 
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
-
+      
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
 
@@ -54,7 +54,6 @@ const CandidateJobApplication = () => {
         signer
       );
       try {
-        console.log("Formadata block job id", jobData.block_job_id);
         await contract.createJobApplication(
           jobData.block_job_id,
           jobData.address
@@ -75,7 +74,7 @@ const CandidateJobApplication = () => {
                 })
                 .then((res) => {
                   if (res.data.status === "success") {
-                    console.log("dProfile updated");
+                    console.log("Profile updated");
                     toast.success("Application Submitted");
                   } else {
                     console.log("Update Failed");
