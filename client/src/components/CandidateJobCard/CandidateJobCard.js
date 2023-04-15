@@ -20,24 +20,50 @@ const CandidateJobCard = (props) => {
   const navigate = useNavigate();
 
   const [showPopup, setShowPopup] = useState(false);
-  const [maxJobReached, setMaxJobReached] = useState(false);
+
+  let doubleApply = false;
+  let maxApplication = false;
+
   const handlePopup = () => {
     setShowPopup(!showPopup);
   };
 
-  const handleApply = () => {
-    axios.post("http://localhost:3001/numberJobsApplied", { email: candidate_email }).then((res) => {
-      if (res.data.status === "success") {
-        if (res.data.count < 10) {
-          console.log(res.data.count);
-          navigate(`/candidate-job-apply/${id}/${email}`);
-        }else{
-          console.log("Cant Apply Max Jobs Reach", maxJobReached);
-          setMaxJobReached(true);
-          toast.error("You've reached your MAX LIMIT 10 to apply for Jobs");
-        }
-      };
+  const handleApply = async () => {
+    const res = await axios.post("http://localhost:3001/checkAlreadyApplied", {
+      candidate_email: candidate_email,
+      company_email: email,
     });
+
+    if (res.data.status === "success") {
+      if (res.data.count < 1) {
+        // navigate(`/candidate-job-apply/${id}/${email}`);
+      } else {
+        doubleApply = true;
+        toast.error(
+          "You can't for two job roles at same company, Try applying another company",
+          { autoClose: 4000 }
+        );
+      }
+    }
+
+    const res_2 = await axios.post("http://localhost:3001/numberJobsApplied", {
+      email: candidate_email,
+    });
+
+    if (res_2.data.status === "success") {
+      if (res_2.data.count < 10) {
+        // navigate(`/candidate-job-apply/${id}/${email}`);
+      } else {
+        maxApplication = true;
+        toast.error("You've reached your MAX LIMIT 10 to apply for Jobs", {
+          autoClose: 4000,
+        });
+      }
+    }
+
+    if (!(doubleApply || maxApplication)) {
+      navigate(`/candidate-job-apply/${id}/${email}`);
+    }
   };
 
   const handleReport = () => {

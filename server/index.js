@@ -621,9 +621,23 @@ app.post("/numberJobsApplied", (req, res) => {
       res.send({ status: "success", count: result[0].count });
     }
   });
-  
 });
 
+app.post("/checkAlreadyApplied", (req, res) => {
+  const candiadate_email = req.body.candidate_email;
+  const company_email = req.body.company_email;
+  console.log(candiadate_email, company_email);
+  const query = "SELECT COUNT(*) as count FROM application WHERE candidate_email = ? AND company_email = ?;";
+  db.query(query, [candiadate_email, company_email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      console.log("count", result[0].count);
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
+});
 
 app.listen(3001, () => {
   console.log("running express server");
