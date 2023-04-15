@@ -558,6 +558,41 @@ app.post("/getJobApplicants", (req, res) => {
   });
 });
 
+app.post("/hireCandidate", (req, res)=>{
+  const job_id = req.body.job_id;
+  const company_email = req.body.company_email;
+  const candidate_email = req.body.candidate_email;
+
+  const query = "INSERT INTO hiring (company_email, job_id, candidate_email) VALUES (?,?,?)";
+
+  db.query(query, [company_email, job_id, candidate_email], (err, result)=>{
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", hired: candidate_email});
+    }
+  })
+});
+
+app.post("/getHiredCandidate", (req, res) => {
+  const job_id = req.body.job_id;
+  const company_email = req.body.company_email;
+
+  const query =
+    "SELECT * FROM hiring WHERE company_email = ? AND job_id = ?";
+
+  db.query(query, [company_email, job_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", result: result });
+    }
+  });
+});
+
+
 app.listen(3001, () => {
   console.log("running express server");
 });

@@ -11,16 +11,31 @@ const CompanyJobApplication = () => {
   const company_email = sessionStorage.getItem("email");
 
   const [CandidateData, setCandidateData] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [hired, setHired] = useState(false);
 
   const handleRowSelect = (event) => {
-    setSelectedRow(event.target.value);
+    setSelectedCandidate(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Selected row: ", selectedRow);
+    console.log("Selected row: ", selectedCandidate);
+    axios
+      .post("http://localhost:3001/hireCandidate", {
+        candidate_email: selectedCandidate,
+        company_email: company_email,
+        job_id: id,
+      })
+      .then((res) => {
+        if (res.data.status === "success") {
+          setSelectedCandidate(res.data.hired);
+          setHired(true);
+        }
+      });
   };
+  const isSubmitDisabled =
+    selectedCandidate === null || selectedCandidate === undefined;
 
   useEffect(() => {
     fetchData();
@@ -48,6 +63,23 @@ const CompanyJobApplication = () => {
         setCandidateData(candidateData);
       }
     });
+
+    await axios
+      .post("http://localhost:3001/getHiredCandidate", {
+        company_email: company_email,
+        job_id: id,
+      })
+      .then((res) => {
+        if (res.data.status === "success") {
+          console.log(res.data.result[0].candidate_email);
+          if (res.data.result) {
+            setSelectedCandidate(res.data.result[0].candidate_email);
+            setHired(true);
+          }
+        } else {
+          console.log("Not Hired Anyone");
+        }
+      });
   };
 
   return (
@@ -85,14 +117,22 @@ const CompanyJobApplication = () => {
               </thead>
               <tbody>
                 {CandidateData.map((row) => (
-                  <tr key={row.id}>
+                  <tr
+                    key={row.id}
+                    style={
+                      selectedCandidate === row.email
+                        ? { backgroundColor: "yellow" }
+                        : {}
+                    }
+                  >
                     <td>
                       <Form.Check
                         type="radio"
                         name="rowSelect"
-                        value={row.id}
+                        value={row.email}
                         onChange={handleRowSelect}
-                        checked={selectedRow === row.id}
+                        disabled={hired}
+                        checked={selectedCandidate === row.email}
                       />
                     </td>
                     <td>{row.id}</td>
@@ -109,7 +149,20 @@ const CompanyJobApplication = () => {
                 ))}
               </tbody>
             </table>
-            <Button type="submit" className="mt-5">Hire Candidate</Button>
+            {!hired && (
+              <Button
+                type="submit"
+                className="mt-5"
+                disabled={isSubmitDisabled}
+              >
+                Hire Candidate
+              </Button>
+            )}
+            {hired && (
+              <Button variant="success" className="mt-5" disabled>
+                Already Hired
+              </Button>
+            )}
           </Form>
         </div>
       </div>
