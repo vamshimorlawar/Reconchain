@@ -29,4 +29,5 @@ Go to server folder
 
 - Following above steps will get the application get started on localhost on your browser.
 
-
+Technologies used - 
+React, Node, MySQL, Solidity, Hardhat
