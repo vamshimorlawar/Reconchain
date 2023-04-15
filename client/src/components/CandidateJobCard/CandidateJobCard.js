@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Modal } from "react-bootstrap";
+import { Card, Button, Modal, Dropdown, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 import styles from "./CandidateJobCard.module.css";
 import jobImage from "../../images/job.png";
@@ -12,39 +12,114 @@ const CandidateJobCard = (props) => {
   const title = props.title;
   const description = props.description;
   const location = props.location;
-  const email = props.email;
+  const email = props.email; //company email
   const report = props.report;
-
+  const hideApply = props.hideApply ? props.hideApply : false;
+  const report_flag = props.report_flag;
+  const candidate_email = sessionStorage.getItem("email");
   const navigate = useNavigate();
 
   const [showPopup, setShowPopup] = useState(false);
+
+  let doubleApply = false;
+  let maxApplication = false;
+
+  const [show, setShow] = useState(false);
+  const [rating, setRating] = useState(0);
+
+  const handleRatingChange = (event) => {
+    setRating(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // You can do further processing with the selected rating value here
+    setShow(false);
+    console.log("Selected rating:", rating);
+
+    axios
+      .post("http://localhost:3001/updateCompanyRate", {
+        company_email: email,
+        company_rating: rating,
+      })
+      .then((res) => {
+        console.log("promise of updateCompanyRate", res.data.status);
+        if (res.data.status === "success") {
+          console.log("come from updateAPI successfully");
+        } else {
+          console.log("come from updateAPI failure");
+        }
+      });
+  };
+
   const handlePopup = () => {
     setShowPopup(!showPopup);
   };
 
-  const handleApply = () => {
-    navigate(`/candidate-job-apply/${id}/${email}`);
-  }
+  const handleApply = async () => {
+    const res = await axios.post("http://localhost:3001/checkAlreadyApplied", {
+      candidate_email: candidate_email,
+      company_email: email,
+    });
+
+    if (res.data.status === "success") {
+      if (res.data.count < 1) {
+        // navigate(`/candidate-job-apply/${id}/${email}`);
+      } else {
+        doubleApply = true;
+        toast.error(
+          "You can't for two job roles at same company, Try applying another company",
+          { autoClose: 4000 }
+        );
+      }
+    }
+
+    const res_2 = await axios.post("http://localhost:3001/numberJobsApplied", {
+      email: candidate_email,
+    });
+
+    if (res_2.data.status === "success") {
+      if (res_2.data.count < 10) {
+        // navigate(`/candidate-job-apply/${id}/${email}`);
+      } else {
+        maxApplication = true;
+        toast.error("You've reached your MAX LIMIT 10 to apply for Jobs", {
+          autoClose: 4000,
+        });
+      }
+    }
+
+    if (!(doubleApply || maxApplication)) {
+      navigate(`/candidate-job-apply/${id}/${email}`);
+    }
+  };
 
   const handleReport = () => {
+    const candidate_email = sessionStorage.getItem("email");
     document.getElementById("report").disabled = true;
-    axios.post("http://localhost:3001/reportJob", {id: id, email: email}).then((res)=>{
-      if(res.data.status === "success"){
-        console.log("Reported Successfully");
-        toast.success("Reported Job!", { autoClose: 1999 });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      }else{
-        console.log("Report failed");
-        toast.error("Report Failed");
-        document.getElementById("report").disabled = false;
-      }
-    })
+    axios
+      .post("http://localhost:3001/reportJob", {
+        id: id,
+        candidate_email: candidate_email,
+        company_email: email,
+      })
+      .then((res) => {
+        if (res.data.status === "success") {
+          console.log("Reported Successfully");
+          toast.success("Reported Job!", { autoClose: 1999 });
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          console.log("Report failed");
+          toast.error("Report Failed");
+          document.getElementById("report").disabled = false;
+        }
+      });
   };
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer />
       <Card className="my-3 px-3 w-50 mx-3 shadow">
         <div className="d-flex align-items-center">
           <Card.Img
@@ -54,6 +129,12 @@ const CandidateJobCard = (props) => {
           />
           <div className="p-3" style={{ width: "50%" }}>
             <Card.Title className="mb-1">{title}</Card.Title>
+            {report >= 2 ? (
+              <Card.Title style={{ color: "red" }}>
+                {"Fraudulent job post!!!"}
+              </Card.Title>
+            ) : null}
+            {/* <Card.Title className="mb-1">{report}</Card.Title> */}
             <Card.Text className="mb-1">
               Company - {email}, Location -
               <i className="fas fa-map-marker-alt mr-2"></i>
@@ -61,12 +142,27 @@ const CandidateJobCard = (props) => {
             </Card.Text>
             <Card.Text className="mb-3">Description - {description}</Card.Text>
             <div className="d-flex" style={{ gap: "10px" }}>
-              <Button variant="primary" onClick={handleApply}>Apply</Button>
-              <Button variant="danger" id="report" onClick={handleReport} disabled={report > 0}>Report</Button>
+              <Button
+                variant="primary"
+                onClick={handleApply}
+                style={{ display: hideApply ? "none" : "block" }}
+              >
+                Apply
+              </Button>
+              <Button
+                variant="danger"
+                id="report"
+                onClick={handleReport}
+                disabled={report_flag > 0}
+              >
+                Report
+              </Button>
               <Button variant="info" onClick={handlePopup}>
                 Contact
               </Button>
-              <Button variant="warning">Rating</Button>
+              <Button variant="warning" onClick={() => setShow(true)}>
+                Rating
+              </Button>
             </div>
           </div>
         </div>
@@ -81,6 +177,31 @@ const CandidateJobCard = (props) => {
         <Modal.Footer>
           <Button onClick={handlePopup}>Close</Button>
         </Modal.Footer>
+      </Modal>
+      <Modal show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rate this item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formRating">
+              <Form.Label>Select a rating:</Form.Label>
+              <Form.Control
+                as="select"
+                value={rating}
+                onChange={handleRatingChange}
+              >
+                <option value="0">Choose...</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Form.Control>
+            </Form.Group>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </Modal.Body>
       </Modal>
     </div>
   );

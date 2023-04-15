@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styles from "./CompanyHome.module.css";
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,6 +10,7 @@ import CompanyJobCard from "../CompanyJobCard/CompanyJobCard";
 const CompanyHome = () => {
   const [jobData, setJobData] = useState(null);
   const email = sessionStorage.getItem("email");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -36,12 +37,25 @@ const CompanyHome = () => {
         />
       );
     });
+
+    const addJobPost = ()=>{
+      axios.post("http://localhost:3001/numberCompanyJobPosts", {email: email}).then((res)=>{
+        if (res.data.status === "success") {
+          if(res.data.count < 10){
+            navigate('/company-job-post');
+          }else{
+            toast.error("You've reached MAX JOB POSTS");
+          } 
+        }
+      });
+      
+    }
     return (
       <div>
         <CompanyNav></CompanyNav>
         <ToastContainer/>
         <div>
-          <Link to="/company-job-post">
+          {/* <Link to="/company-job-post"> */}
             <div className="p-3"
               style={{
                 backgroundColor: "white",
@@ -51,11 +65,11 @@ const CompanyHome = () => {
                 zIndex: "1",
               }}
             >
-              <button className="btn btn-warning mx-3">
+              <button className="btn btn-warning mx-3" onClick={addJobPost}>
                 Add New Job Post
               </button>
             </div>
-          </Link>
+          {/* </Link> */}
           <div>{postItems}</div>
         </div>
       </div>

@@ -1,6 +1,18 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
+
+// create reusable transporter object using the default SMTP transport
+let transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "reconchaincs@gmail.com", // replace with your email address
+    pass: "odrnduiomlqqdwkh", // replace with your email password
+  },
+});
 
 const app = express();
 
@@ -106,6 +118,7 @@ app.post("/getCandidateProfile", (req, res) => {
     if (result.length > 0) {
       res.send({
         status: "success",
+        id: result[0].id,
         username: result[0].username,
         email: result[0].email,
         rating: result[0].rating,
@@ -129,12 +142,47 @@ app.post("/updateCandidateProfile", (req, res) => {
   const languages = req.body.languages;
   const mobile = req.body.mobile;
 
-  const query =
-    "UPDATE candidate_profile SET interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+  let rating = 0;
+  if(interests ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(education ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(experience ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(skills ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(languages ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  if(mobile ===''){
+    rating += 0;
+  }else{
+    rating +=1;
+  }
+  // const rate = rating;
 
+  console.log("candi rating", rating);
+
+  const query =
+    "UPDATE candidate_profile SET rating = ?, interests = ?, education = ?, experience = ?, skills = ?, languages = ?, mobile = ? WHERE email = ?";
+  
   db.query(
     query,
-    [interests, education, experience, skills, languages, mobile, email],
+    [rating, interests, education, experience, skills, languages, mobile, email],
     (err, result) => {
       if (err) {
         res.send({ status: "failure" });
@@ -194,6 +242,24 @@ app.post("/updateCompanyProfile", (req, res) => {
   );
 });
 
+app.post("/createApplicationProfile", (req, res) => {
+  const candidate_email = req.body.candidate_email;
+  const company_email = req.body.company_email;
+  const job_id = req.body.job_id;
+
+  const query =
+    "INSERT INTO application (candidate_email, company_email, job_id) VALUES (?, ?, ?)";
+
+  db.query(query, [candidate_email, company_email, job_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success" });
+    }
+  });
+});
+
 app.post("/addJobPost", (req, res) => {
   const company_email = req.body.company_email;
   const title = req.body.title;
@@ -214,7 +280,49 @@ app.post("/addJobPost", (req, res) => {
         console.log(err);
         res.send({ status: "failure" });
       } else {
-        
+        const query_2 = "SELECT * FROM candidate_profile WHERE interests = ?";
+        db.query(query_2, [tag], (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            let recipients = [];
+            result.forEach((candidate) => {
+              recipients.push(candidate.email);
+            });
+            // setup email data with unicode symbols
+            let mailOptions = {
+              from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
+              subject: "Reconchain: New Job Post " + title, // Subject line
+              text: "Hello, " + title + " Description: " + description, // plain text body
+              html:
+                "<div>" +
+                title +
+                "</div><div>" +
+                description +
+                "</div><div> Location: " +
+                location +
+                "</div><div> Salary: " +
+                salary +
+                "</div><div>Type: " +
+                type +
+                "</div><b>Thank you, Reconchain</b>", // html body
+            };
+            // send mail to each recipient
+            for (let i = 0; i < recipients.length; i++) {
+              mailOptions.to = recipients[i];
+              // send mail with defined transport object
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  return console.log(error);
+                }
+                console.log(
+                  `Message sent to ${recipients[i]}: %s`,
+                  info.messageId
+                );
+              });
+            }
+          }
+        });
         res.send({ status: "success" });
       }
     }
@@ -235,8 +343,58 @@ app.post("/getJobPosts", (req, res) => {
   });
 });
 
+app.post("/getAppliedJobs", (req, res) => {
+  let jobList = [];
+  let completedQueries = 0;
+  const email = req.body.email;
+  const query =
+    "SELECT company_email, job_id FROM application WHERE candidate_email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 =
+        "SELECT * FROM job_posts WHERE id = ? AND company_email = ?";
+      for (let i = 0; i < result.length; i++) {
+        db.query(
+          query_2,
+          [result[i].job_id, result[i].company_email],
+          (err, result2) => {
+            if (err) {
+              console.log(err);
+              console.log("error inside 2nd query getappliedjob");
+              res.send({ status: "failure" });
+            } else {
+              jobList.push(result2);
+              completedQueries++;
+              if (completedQueries === result.length) {
+                res.send({ status: "success", posts: jobList });
+              }
+            }
+          }
+        );
+      }
+    }
+  });
+});
+
 app.get("/getJobPosts", (req, res) => {
   const query = "SELECT * FROM job_posts";
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", posts: result });
+    }
+  });
+});
+
+app.get("/getCandidatesProfile", (req, res) => {
+  const query = "SELECT * FROM candidate_profile";
 
   db.query(query, (err, result) => {
     if (err) {
@@ -261,28 +419,156 @@ app.post("/deleteJob", (req, res) => {
     }
   });
 });
+app.post("/getUnappliedJobs", (req, res) => {
+  const candidate_email = req.body.candidate_email;
+  const query = `SELECT * FROM job_posts WHERE (company_email, id) NOT IN (SELECT company_email, job_id FROM application WHERE candidate_email = ?)`;
 
-app.post("/reportJob", (req, res) => {
-  const id = req.body.id;
-  const email = req.body.email;
-  const query_1 =
-    "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
-
-  db.query(query_1, [id, email], (err, result) => {
+  db.query(query, [candidate_email], (err, result) => {
     if (err) {
       console.log(err);
       res.send({ status: "failure" });
     } else {
-      reportValue = result[0].report;
-      const query =
-        "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
+      console.log(result);
+      res.send({ status: "success", posts: result });
+    }
+  });
+});
 
-      db.query(query, [reportValue + 1, id, email], (err, result) => {
+app.post("/getJobReportFlag", (req, res) => {
+  // console.log("getJobReportFlag");
+  const candidate_email = req.body.candidate_email;
+  const job_id = req.body.job_id;
+
+  const query =
+    "SELECT * FROM job_report_history WHERE candidate_email = ? AND job_id = ?";
+  db.query(query, [candidate_email, job_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      // console.log(result);
+      if (result.length == 1) {
+        res.send({ status: "success", report_flag: 1 });
+      } else {
+        res.send({ status: "success", report_flag: 0 });
+      }
+    }
+  });
+});
+
+app.post("/deleteCandidateProfile", (req, res) => {
+  const email = req.body.email;
+  const query = "DELETE FROM candidate_profile WHERE email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 = "DELETE FROM user_account WHERE email = ?";
+      db.query(query_2, [email], (err, result) => {
         if (err) {
           console.log(err);
           res.send({ status: "failure" });
         } else {
           res.send({ status: "success" });
+        }
+      });
+    }
+  });
+});
+
+app.post("/deleteCompanyProfile", (req, res) => {
+  const email = req.body.email;
+  const query = "DELETE FROM company_profile WHERE email = ?";
+
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      const query_2 = "DELETE FROM user_account WHERE email = ?";
+      db.query(query_2, [email], (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({ status: "failure" });
+        } else {
+          res.send({ status: "success" });
+        }
+      });
+    }
+  });
+});
+
+app.post("/updateCompanyRate", (req, res) => {
+  console.log("bhak", req.body);
+  const company_email = req.body.company_email;
+  const company_rate = req.body.company_rating;
+  // console.log("type", typeof company_rate);
+  const query1 = "SELECT rating FROM company_profile WHERE email = ?";
+  const query2 = "UPDATE company_profile SET rating = ? WHERE email = ?";
+
+  db.query(query1, [company_email], (err, result) => {
+    if (err) {
+      res.send({
+        status: "fail",
+      });
+    } else {
+      // console.log("company current rating container",result);
+      rating = result[0].rating;
+      console.log("type", typeof rating);
+      final_rate = rating + parseInt(company_rate);
+      // console.log("company current rating value",rating);
+      db.query(query2, [final_rate, company_email], (err, result1) => {
+        if (err) {
+          res.send({
+            status: "fail",
+          });
+        } else {
+          res.send({
+            status: "success",
+          });
+        }
+      });
+    }
+  });
+});
+
+app.post("/reportJob", (req, res) => {
+  const id = req.body.id; // job id
+  const email = req.body.company_email; //company email
+  const candidate_email = req.body.candidate_email;
+
+  const query_2 =
+    "INSERT INTO job_report_history (candidate_email, job_id, report_flag) VALUES (?, ?, ?)";
+
+  db.query(query_2, [candidate_email, id, 1], (err, result) => {
+    if (err) {
+      res.send({
+        status: "failure",
+      });
+    } else {
+      console.log("success");
+      const query_1 =
+        "SELECT report FROM job_posts WHERE id = ? AND company_email = ?";
+
+      db.query(query_1, [id, email], (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({ status: "failure" });
+        } else {
+          reportValue = result[0].report;
+          const query =
+            "UPDATE job_posts SET report = ? WHERE id = ? AND company_email = ?";
+
+          db.query(query, [reportValue + 1, id, email], (err, result) => {
+            if (err) {
+              console.log(err);
+              res.send({ status: "failure" });
+            } else {
+              res.send({ status: "success" });
+            }
+          });
         }
       });
     }
@@ -329,6 +615,124 @@ app.post("/updateJobPost", (req, res) => {
       }
     }
   );
+});
+
+app.post("/getJobApplicants", (req, res) => {
+  const id = req.body.id;
+  const email = req.body.email;
+
+  const query =
+    "SELECT * FROM application WHERE company_email = ? AND job_id = ?";
+
+  db.query(query, [email, id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", result: result });
+    }
+  });
+});
+
+app.post("/hireCandidate", (req, res) => {
+  const job_id = req.body.job_id;
+  const company_email = req.body.company_email;
+  const candidate_email = req.body.candidate_email;
+
+  const query =
+    "INSERT INTO hiring (company_email, job_id, candidate_email) VALUES (?,?,?)";
+
+  db.query(query, [company_email, job_id, candidate_email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      // setup email data with unicode symbols
+      let mailOptions = {
+        from: '"Reconchain" <reconchaincs@gmail.com>', // sender address
+        subject: "Reconchain: Congratulations!", // Subject line
+        text: "Hello, ", // plain text body
+        html:
+          "<div>" +
+          candidate_email +
+          "</div><div>You are hired by " +
+          company_email +
+          " for the job " +
+          job_id +
+          "</div><b>Thank you, Reconchain</b>", // html body
+      };
+      //send email
+      mailOptions.to = candidate_email;
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log(`Message sent to ${recipients[i]}: %s`, info.messageId);
+      });
+      res.send({ status: "success", hired: candidate_email });
+    }
+  });
+});
+
+app.post("/getHiredCandidate", (req, res) => {
+  const job_id = req.body.job_id;
+  const company_email = req.body.company_email;
+
+  const query = "SELECT * FROM hiring WHERE company_email = ? AND job_id = ?";
+
+  db.query(query, [company_email, job_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", result: result });
+    }
+  });
+});
+
+app.post("/numberJobsApplied", (req, res) => {
+  const email = req.body.email;
+  const query =
+    "SELECT COUNT(*) as count FROM application WHERE candidate_email = ?;";
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
+});
+
+app.post("/checkAlreadyApplied", (req, res) => {
+  const candiadate_email = req.body.candidate_email;
+  const company_email = req.body.company_email;
+  console.log(candiadate_email, company_email);
+  const query =
+    "SELECT COUNT(*) as count FROM application WHERE candidate_email = ? AND company_email = ?;";
+  db.query(query, [candiadate_email, company_email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      console.log("count", result[0].count);
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
+});
+
+app.post("/numberCompanyJobPosts", (req, res) => {
+  const email = req.body.email;
+  const query =
+    "SELECT COUNT(*) as count FROM job_posts WHERE company_email = ?;";
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failure" });
+    } else {
+      res.send({ status: "success", count: result[0].count });
+    }
+  });
 });
 
 app.listen(3001, () => {

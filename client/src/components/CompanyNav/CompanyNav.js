@@ -20,6 +20,7 @@ const CompanyNav = () => {
         <Nav className="mr-auto">
           <Nav.Link href="/company-home">Home</Nav.Link>
           <Nav.Link href="/company-profile">Profile</Nav.Link>
+          <Nav.Link href="/view-all-candidates">View Candidates</Nav.Link>
           <Nav.Link onClick={logout}>Logout</Nav.Link>
         </Nav>
       </Navbar.Collapse>
