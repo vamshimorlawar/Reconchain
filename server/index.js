@@ -43,10 +43,10 @@ app.post("/signup", (req, res) => {
     const query =
       "INSERT INTO user_account (name, email, password, userType, address) VALUES (?,?,?,?,?)";
     const query_2 =
-      "INSERT INTO candidate_profile (username, email, rating,	interests	,education	,experience,	skills,	languages,	mobile) VALUES (?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO candidate_profile (username, email, rating,	interests	,education	,experience,	skills,	languages,	mobile, address) VALUES (?,?,?,?,?,?,?,?,?,?)";
 
     const query_3 =
-      "INSERT INTO company_profile (username, email, rating, company_name, location, mobile, website, about, number_job_posts) VALUES (?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO company_profile (username, email, rating, company_name, location, mobile, website, about, number_job_posts, address) VALUES (?,?,?,?,?,?,?,?,?,?)";
     db.query(
       query,
       [username, email, password, userType, address],
@@ -63,7 +63,7 @@ app.post("/signup", (req, res) => {
     if (userType === "candidate") {
       db.query(
         query_2,
-        [username, email, 0, "", "", "", "", "", ""],
+        [username, email, 0, "", "", "", "", "", "", address],
         (err, result) => {
           if (err) {
             console.log(err);
@@ -74,7 +74,7 @@ app.post("/signup", (req, res) => {
     if (userType === "company") {
       db.query(
         query_3,
-        [username, email, 0, "", "", "", "", "", 0],
+        [username, email, 0, "", "", "", "", "", 0, address],
         (err, result) => {
           if (err) {
             console.log(err);
@@ -133,6 +133,7 @@ app.post("/getCandidateProfile", (req, res) => {
         skills: result[0].skills,
         languages: result[0].languages,
         mobile: result[0].mobile,
+        address: result[0].address
       });
     }
   });

@@ -97,7 +97,7 @@ const CompanyJobCard = (props) => {
     // Check if password is correct here
     if (password === "ADMIN") {
       setIsPasswordCorrect(true);
-      navigate(`/company-job-applicants/${id}`);
+      navigate(`/company-job-applicants/${id}/${block_job_id}`);
     }
   };
 

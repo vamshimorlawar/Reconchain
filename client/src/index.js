@@ -100,7 +100,7 @@ root.render(
         element={<CompanyUpdateJobPost />}
       />
       <Route
-        path="/company-job-applicants/:id"
+        path="/company-job-applicants/:id/:block_job_id"
         element={<CompanyJobApplication />}
       />
       {/* <Route path="/view-all-candidates" element={<CandidateCard />} /> */}
